@@ -57,9 +57,9 @@ export default function SearchLaundryScreen() {
       >
         <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
           <View style={styles.modalContainer}>
-            {locations.map((loc, index) => (
+            {locations.map((loc, homepage) => (
               <TouchableOpacity
-                key={index}
+                key={homepage}
                 style={styles.modalItem}
                 onPress={() => {
                   setCurrentLocation(loc);
@@ -92,8 +92,8 @@ export default function SearchLaundryScreen() {
           <>
             <Text style={styles.sectionTitle}>You may want to search</Text>
             <View style={styles.suggestionContainer}>
-              {suggestions.map((s, index) => (
-                <Pressable key={index} style={styles.suggestionChip} onPress={() => setQuery(s)}>
+              {suggestions.map((s, homepage) => (
+                <Pressable key={homepage} style={styles.suggestionChip} onPress={() => setQuery(s)}>
                   <Text style={styles.suggestionText}>{s}</Text>
                 </Pressable>
               ))}

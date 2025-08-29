@@ -11,7 +11,7 @@ const shops = [
   { id: "4", name: "Wash n’ Wait - Lahug", distance: "1.7km", rating: "4.5", image: "https://via.placeholder.com/100/4682B4/FFFFFF?text=Wash+Wait" },
 ];
 
-export default function Index() {
+export default function Homepage() {
     const navigation = useNavigation();
 
     useLayoutEffect(() => {
