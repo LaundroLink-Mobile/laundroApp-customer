@@ -1,4 +1,4 @@
-import { Link, useNavigation } from "expo-router";
+import { Link, router, useNavigation, useRouter } from "expo-router";
 import { useLayoutEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 
@@ -49,9 +49,12 @@ export default function Payment() {
           <Text style={styles.invoice}>#LAU123456</Text>
           <Text style={styles.paid}>Paid</Text>
         </View>
-        <TouchableOpacity style={styles.invoiceButton}>
-          <Text style={styles.invoiceButtonText}>View Invoice</Text>
-        </TouchableOpacity>
+         <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.push("/(tabs)/payment/invoice")}
+      >
+        <Text style={styles.buttonText}>View Invoice</Text>
+      </TouchableOpacity>
       </View>
 
       {/* Payment History */}
@@ -128,7 +131,7 @@ const styles = StyleSheet.create({
   invoice: { fontSize: 14, color: "#555" },
   paid: { fontSize: 14, color: "green", fontWeight: "500" },
   
-  invoiceButton: {
+  button: {
     backgroundColor: "#89CFF0",
     borderRadius: 8,
     paddingVertical: 8,
@@ -137,7 +140,7 @@ const styles = StyleSheet.create({
      borderWidth: 1.5,
     borderColor: "#0D47A1",
   },
-  invoiceButtonText: {
+  buttonText: {
     color: "#000",
     fontWeight: "600",
   },

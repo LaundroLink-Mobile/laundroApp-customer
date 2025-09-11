@@ -1,4 +1,4 @@
-import { Link, useNavigation } from "expo-router";
+import { Link, router, useNavigation, useRouter } from "expo-router";
 import { useLayoutEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -47,9 +47,12 @@ export default function Activity() {
           <Text style={styles.orderText}>Pickup: Apr 30, 02:00PM</Text>
           <Text style={styles.orderText}>Delivery: May 1, 03:00PM</Text>
           <Text style={styles.orderText}>Total: ₱ 450.00</Text>
-          <TouchableOpacity style={styles.viewButton}>
-            <Text style={styles.viewButtonText}>View Details</Text>
-          </TouchableOpacity>
+           <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.push("/(tabs)/activity/receipt")}
+      >
+        <Text style={styles.buttonText}>View Details</Text>
+      </TouchableOpacity>
         </View>
       </View>
 
@@ -132,7 +135,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#333",
   },
-  viewButton: {
+  button: {
     backgroundColor: "#89CFF0",
     marginTop: 8,
     paddingVertical: 6,
@@ -142,7 +145,7 @@ const styles = StyleSheet.create({
     borderColor: "#0D47A1",
   },
 
-  viewButtonText: {
+  buttonText: {
     color: "#000",
     fontWeight: "bold",
   },
