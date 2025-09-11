@@ -37,6 +37,7 @@ export default function TabLayout() {
       <Tabs.Screen 
         name="activity" 
         options={{ 
+          headerShown: false,
           title: 'Activity',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'time' : 'time-outline'} color={color} size={24} />
@@ -47,6 +48,7 @@ export default function TabLayout() {
       <Tabs.Screen 
         name="payment" 
         options={{ 
+          headerShown: false,
           title: 'Payment',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'card' : 'card-outline'} color={color} size={24} />
@@ -56,7 +58,8 @@ export default function TabLayout() {
 
       <Tabs.Screen 
         name="message" 
-        options={{ 
+        options={{
+          headerShown: false, 
           title: 'Messages',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'chatbubble' : 'chatbubble-outline'} color={color} size={24} />

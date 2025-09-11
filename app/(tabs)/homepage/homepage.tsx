@@ -5,28 +5,109 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 
 const shops = [
-  { id: "1", name: "Wash n’ Dry - Lahug", distance: "1.7km", rating: "4.5", image: "https://via.placeholder.com/100/0000FF/FFFFFF?text=Wash+Dry" },
-  { id: "2", name: "Sparklean - Apas", distance: "1km", rating: "4.0", image: "https://via.placeholder.com/100/90EE90/000000?text=Sparklean" },
-  { id: "3", name: "Laundry Cleaning - Cebu", distance: "1.1km", rating: "4.5", image: "https://via.placeholder.com/100/FFD580/000000?text=Laundry" },
-  { id: "4", name: "Wash n’ Wait - Lahug", distance: "1.7km", rating: "4.5", image: "https://via.placeholder.com/100/4682B4/FFFFFF?text=Wash+Wait" },
+  { id: "1", 
+    name: "Wash n’ Dry - Lahug", 
+    distance: "1.7km", 
+    rating: "4.5", 
+    image: require("@/assets/images/washndry.png"),
+    description: "Experience top-notch laundry facilities equipped with state-of-the-art machines and a clean, comfortable environment.",
+    addDescription: "We accept a wide variety of fabrics, including cotton, linen, polyester, denim, wool, and delicate materials like silk and lace. Whether it's everyday wear or specialty garments, your laundry is in good hands.",
+    address: "Wilson St., Lahug, Cebu City",
+    contact: "09223324839",
+    hours: "8am-6pm",
+    availability: "Available",
+    reviews: {
+      5: 80,
+      4: 30,
+      3: 10,
+      2: 5,
+      1: 2,
+  },
+},
+  { id: "2", 
+    name: "Sparklean - Apas", 
+    distance: "1km", rating: "4.0", 
+    image: require("@/assets/images/sparklean.jpg"),
+    description: "Offering comprehensive laundry services with a focus on quality and customer satisfaction.",
+    addDescription: "From wash and fold to dry cleaning, we handle all types of laundry with care. Our eco-friendly detergents ensure your clothes are not only clean but also safe for the environment.",
+    address: "Apas, Cebu City",
+    contact: "09171234567",
+    hours: "9am-7pm",
+    availability: "Available",
+    reviews: {
+      5: 80,
+      4: 30,
+      3: 10,
+      2: 5,
+      1: 2,
+    }
+  },
+  { id: "3", 
+    name: "Laundry Cleaning - Cebu", 
+    distance: "1.1km", rating: "4.5", 
+    image: require("@/assets/images/laundry.avif"),
+    description: "Your go-to laundry service for fast, reliable, and affordable cleaning solutions.",
+    addDescription: "We specialize in handling all types of garments, ensuring they are cleaned to perfection. Our friendly staff and efficient service make laundry day a breeze.",
+    address: "Cebu City",
+    contact: "09339876543",
+    hours: "8am-8pm",
+    availability: "Available",
+    reviews: {
+      5: 80,
+      4: 30,
+      3: 10,
+      2: 5,
+      1: 2,
+    }
+  },
+  { id: "4", 
+    name: "Wash n’ Wait - Lahug", 
+    distance: "1.7km", 
+    rating: "4.5", 
+    image: require("@/assets/images/washnwait.jpg"),
+    description: "Convenient and quick laundry services designed to fit your busy lifestyle.",
+    addDescription: "With our state-of-the-art machines and experienced staff, we guarantee your clothes will be fresh, clean, and ready to wear in no time.",
+    address: "Wilson St., Lahug, Cebu City",
+    contact: "09451237890",
+    hours: "7am-5pm",
+    availability: "Available",
+    reviews: {
+      5: 80,
+      4: 30,
+      3: 10,
+      2: 5,
+      1: 2,
+    }},
 ];
+
 
 export default function Homepage() {
     const navigation = useNavigation();
 
     useLayoutEffect(() => {
         navigation.setOptions({
-        headerShown: true,
-        headerStyle: { backgroundColor: "#47cbe2ff" },
-        headerTintColor: "#fff",
+         headerShown: true,
+         headerStyle: { 
+          backgroundColor: "#89CFF0",
+          borderBottomWidth: 1.5,      
+          borderBottomColor: "#5EC1EF", 
+         },
+         headerTintColor: "#2d2d2dff",
         headerShadowVisible: false,
+        headerLeft: () => null,
         headerTitle: () => (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Ionicons name="location-outline" size={20} color="#2d2d2dff" />
-            <Text style={{ color: "#2d2d2dff", marginLeft: 5, fontSize: 16, fontWeight: "600" }}>
+            <Text style={{ 
+              color: "#2d2d2dff", 
+              marginLeft: 5, 
+              fontSize: 20, 
+              fontWeight: "600",
+               }}
+               >
                 Home ▼
             </Text>
-            </View>
+            </View>             
         ),
         headerRight: () => (
             <Ionicons name="person-circle-outline" size={32} color="#2d2d2dff" style={{ marginRight: 10 }} />
@@ -54,15 +135,29 @@ export default function Homepage() {
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.shopList}
             renderItem={({ item }) => (
-                <Link 
-                href={{
-                    pathname: "./about_laundry",
-                    params: { id: item.id, name: item.name, image: item.image, distance: item.distance, rating: item.rating }
-                }}
-                asChild
-                >
+               <Link 
+                 href={{
+                pathname: "./about_laundry",
+               params: { 
+               id: item.id, 
+              name: item.name, 
+              distance: item.distance, 
+              rating: item.rating, 
+              image: item.image, 
+              description: item.description,
+              addDescription: item.addDescription,
+              address: item.address,
+              contact: item.contact,
+              hours: item.hours,
+              availability: item.availability,
+              reviews: JSON.stringify(item.reviews), 
+             },
+  }}
+                  asChild
+>
+
                 <Pressable style={styles.shopCard}>
-                    <Image source={{ uri: item.image }} style={styles.shopImage} />
+                    <Image source={item.image} style={styles.shopImage} />
                     <Text style={styles.shopName}>{item.name}</Text>
                     <Text style={styles.shopDetails}>{item.distance} • ⭐ {item.rating}</Text>
                 </Pressable>
@@ -88,7 +183,7 @@ const styles = StyleSheet.create({
   headerTitleText: {
     color: "#fff",
     marginLeft: 5,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "600",
   },
   headerRight: {
@@ -113,8 +208,9 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   placeholder: {
-    fontSize: 16,
+    fontSize: 20,
     color: '#888',
+    fontWeight: "bold",
   },
   sectionTitle: {
     fontSize: 18,

@@ -62,7 +62,6 @@ const savePayment = () => {
     setPayments([...payments, { type: "Cash", name: "Cash Payment", number: "" }]);
   }
 
-  // ✅ These should always run after adding payment
   setShowPaymentModal(false);
   setPaymentType(null);
 };
@@ -77,7 +76,7 @@ const savePayment = () => {
   const saveProfile = () => {
     console.log({ phone, email, addresses, payments, profilePic });
     Alert.alert("Profile saved!");
-    router.replace("/homepage/homepage"); // ✅ goes to homepage
+    router.replace("/homepage/homepage"); 
   };
 
   const changeProfilePic = () => {

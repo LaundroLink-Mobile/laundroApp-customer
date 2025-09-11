@@ -1,0 +1,186 @@
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  ScrollView,
+} from "react-native";
+import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
+import { useRouter, Stack } from "expo-router";
+
+export default function DeliveryPayment() {
+  const router = useRouter();
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
+  const options = [
+    {
+      id: "dropoff",
+      title: "Drop-off at Shop",
+      description:
+        "You will bring your laundry directly to the shop. No pickup or delivery fees.",
+      icon: <Ionicons name="storefront" size={36} color="#004aad" />,
+      fee: "₱ 0.00", // Customer drops off and picks up themselves
+      route: "/(tabs)/homepage/order_dropoff",
+    },
+    {
+      id: "pickup",
+      title: "Pickup Only",
+      description:
+        "Shop will book a rider to pick up your laundry. You’ll return to the shop to collect it. Rider fee will be confirmed.",
+      icon: <FontAwesome5 name="truck" size={36} color="#004aad" />,
+      fee: "To be confirmed", // Shop books Grab/Maxim/etc.
+      route: "/(tabs)/homepage/order_pickup",
+    },
+    {
+      id: "delivery",
+      title: "Pickup & Delivery",
+      description:
+        "Shop will book a rider to pick up your laundry and deliver it back to your doorstep. Rider fee will be confirmed.",
+      icon: <Ionicons name="bicycle" size={36} color="#004aad" />,
+      fee: "To be confirmed", // Shop books Grab/Maxim/etc.
+      route: "/(tabs)/homepage/order_delivery",
+    },
+  ];
+
+  // Find selected option details
+  const selectedDetails = options.find((opt) => opt.id === selectedOption);
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      {/* Header */}
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerStyle: { backgroundColor: "#89CFF0" },
+          headerShadowVisible: false,
+          headerTintColor: "#2d2d2dff",
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons
+                name="arrow-back"
+                size={24}
+                color="#000"
+                style={{ marginLeft: 10 }}
+              />
+            </TouchableOpacity>
+          ),
+          headerTitle: () => (
+            <Text style={styles.headerTitle}>Delivery Option</Text>
+          ),
+        }}
+      />
+
+      {/* Content */}
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.instruction}>
+          Select how you want to use the service. You can drop it off yourself,
+          or have the shop handle pickup and delivery!
+        </Text>
+
+        {options.map((option) => (
+          <TouchableOpacity
+            key={option.id}
+            style={[
+              styles.card,
+              selectedOption === option.id && styles.cardSelected,
+            ]}
+            onPress={() => setSelectedOption(option.id)}
+          >
+            <View style={styles.cardContent}>
+              {option.icon}
+              <View style={{ flex: 1, marginLeft: 12 }}>
+                <Text style={styles.cardTitle}>{option.title}</Text>
+                <Text style={styles.cardDesc}>{option.description}</Text>
+              </View>
+            </View>
+            <Text style={styles.feeText}>{option.fee}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      {/* Payment Button */}
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={[
+            styles.paymentButton,
+            !selectedOption && { backgroundColor: "#ccc" }, // disabled style
+          ]}
+          onPress={() =>
+            selectedDetails && router.push(selectedDetails.route)
+          }
+          disabled={!selectedOption}
+        >
+          <Text style={styles.paymentText}>
+            {selectedDetails
+              ? `${selectedDetails.fee}   |   ORDER`
+              : "Select an option"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: "#fff" },
+
+  container: { padding: 20, paddingBottom: 120 },
+
+  headerTitle: {
+    color: "#2d2d2dff",
+    fontSize: 20,
+    fontWeight: "600",
+    marginLeft: 20,
+  },
+
+  instruction: {
+    textAlign: "center",
+    marginVertical: 15,
+    fontSize: 14,
+    color: "#333",
+    lineHeight: 20,
+  },
+
+  card: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 15,
+  },
+
+  cardSelected: { borderColor: "#004aad", borderWidth: 2 },
+
+  cardContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+
+  cardTitle: { fontSize: 16, fontWeight: "bold", color: "#000" },
+
+  cardDesc: { fontSize: 13, color: "#555", marginTop: 2 },
+
+  feeText: { fontSize: 14, fontWeight: "600", color: "#e67e22" },
+
+  footer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 15,
+    backgroundColor: "#fff",
+  },
+
+  paymentButton: {
+    backgroundColor: "#004aad",
+    paddingVertical: 16,
+    borderRadius: 25,
+    alignItems: "center",
+  },
+
+  paymentText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+});
