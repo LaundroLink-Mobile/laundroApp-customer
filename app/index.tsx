@@ -11,7 +11,7 @@ export default function Index() {
 
   const handleLogin = () => {
     // TODO: validate login with API
-    router.replace("/editProfile"); // ✅ goes to Edit Profile
+    router.replace("/editProfile"); // goes to Edit Profile
   };
 
   return (

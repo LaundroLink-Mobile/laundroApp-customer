@@ -8,39 +8,24 @@ import {
   Image,
   SafeAreaView,
 } from "react-native";
-import {
-  Ionicons,
-  MaterialCommunityIcons,
-  FontAwesome5,
-} from "@expo/vector-icons";
-import { useRouter, Stack } from "expo-router"; 
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter, Stack } from "expo-router";
 
 export default function AvailableServices() {
   const router = useRouter();
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
 
   const services = [
-    {
-      id: 1,
-      name: "WASHING",
-      icon: <MaterialCommunityIcons name="washing-machine" size={40} color="#004aad" />,
-    },
-    {
-      id: 2,
-      name: "STEAM PRESS",
-      icon: <MaterialCommunityIcons name="iron" size={40} color="#004aad" />,
-    },
-    {
-      id: 3,
-      name: "DRY CLEANING",
-      icon: <FontAwesome5 name="tshirt" size={40} color="#004aad" />,
-    },
-    {
-      id: 4,
-      name: "FOLDING",
-      icon: <Ionicons name="basket" size={40} color="#004aad" />,
-    },
+    { id: 1, name: "Wash, Dry, and Fold" },
+    { id: 2, name: "Wash, Dry, and Press" },
+    { id: 3, name: "Wash and Dry" },
+    { id: 4, name: "Press only" },
+    { id: 5, name: "Full Service (Wash, Dry, Press, and Fold)" },
   ];
+
+  const serviceNames = services
+    .filter((service) => selectedServices.includes(service.id))
+    .map((service) => service.name);
 
   const toggleService = (id: number) => {
     setSelectedServices((prev) =>
@@ -60,7 +45,12 @@ export default function AvailableServices() {
           headerTintColor: "#2d2d2dff",
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="arrow-back" size={24} color="#000" style={{ marginLeft: 10 }} />
+              <Ionicons
+                name="arrow-back"
+                size={24}
+                color="#000"
+                style={{ marginLeft: 10 }}
+              />
             </TouchableOpacity>
           ),
           headerTitle: () => (
@@ -93,26 +83,28 @@ export default function AvailableServices() {
             Please select the service(s) you need:
           </Text>
 
-          <View style={styles.grid}>
+          <View style={styles.servicesList}>
             {services.map((service) => (
               <TouchableOpacity
                 key={service.id}
                 style={[
-                  styles.card,
-                  selectedServices.includes(service.id) && styles.cardSelected,
+                  styles.serviceOption,
+                  selectedServices.includes(service.id) &&
+                    styles.serviceOptionSelected,
                 ]}
                 onPress={() => toggleService(service.id)}
               >
-                {service.icon}
-                <Text style={styles.serviceName}>{service.name}</Text>
-                {selectedServices.includes(service.id) && (
-                  <Ionicons
-                    name="checkmark-circle"
-                    size={22}
-                    color="#2ecc71"
-                    style={styles.checkIcon}
-                  />
-                )}
+                <Ionicons
+                  name={
+                    selectedServices.includes(service.id)
+                      ? "checkbox"
+                      : "square-outline"
+                  }
+                  size={22}
+                  color="#000"
+                  style={{ marginRight: 10 }}
+                />
+                <Text style={styles.serviceText}>{service.name}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -123,7 +115,12 @@ export default function AvailableServices() {
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.nextButton}
-          onPress={() => router.push("/(tabs)/homepage/laundry_details")}
+          onPress={() =>
+            router.push({
+              pathname: "/(tabs)/homepage/laundry_details",
+              params: { services: JSON.stringify(serviceNames) },
+            })
+          }
         >
           <Text style={styles.nextText}>Next</Text>
         </TouchableOpacity>
@@ -133,84 +130,61 @@ export default function AvailableServices() {
 }
 
 const styles = StyleSheet.create({
-
-  safeArea: { 
-    flex: 1, 
-    backgroundColor: "#f6f6f6" 
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#f6f6f6",
   },
-
-  container: { 
-    alignItems: "center", 
-    padding: 20, 
-    paddingBottom: 100 
-  },
-
-  wrapper: { 
-    flex: 1 
-  },
-
-  shopSection: { 
-    alignItems: "center", 
-    marginTop: 20 
-  },
-
-  shopImage: { 
-    width: 120, 
-    height: 120, 
-    resizeMode: "contain", 
-    borderRadius: 10 
-  },
-  
-  shopName: { 
-    fontSize: 18, 
-    fontWeight: "bold", 
-    color: "#000", 
-    marginTop: 8 
-  },
-
-  instruction: { 
-    textAlign: "center", 
-    marginVertical: 15, 
-    fontSize: 14, 
-    color: "#333" 
-  },
-
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    marginTop: 38,
-  },
-
-  card: {
-    width: "45%",
-    backgroundColor: "#D8F1FF",
-    borderRadius: 12,
-    paddingVertical: 30,
+  container: {
     alignItems: "center",
-    marginBottom: 20,
-    position: "relative",
+    padding: 20,
+    paddingBottom: 100,
   },
-
-  cardSelected: { 
-    borderColor: "#004aad", 
-    borderWidth: 2 
+  wrapper: {
+    flex: 1,
   },
-
-  serviceName: { 
-    fontSize: 15, 
-    fontWeight: "bold", 
-    color: "#000", 
-    marginTop: 10 
+  shopSection: {
+    alignItems: "center",
+    marginTop: 20,
   },
-
-  checkIcon: { 
-    position: "absolute", 
-    top: 8, 
-    right: 8 
+  shopImage: {
+    width: 120,
+    height: 120,
+    resizeMode: "contain",
+    borderRadius: 10,
   },
-
+  shopName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#000",
+    marginTop: 8,
+  },
+  instruction: {
+    textAlign: "center",
+    marginVertical: 15,
+    fontSize: 14,
+    color: "#333",
+  },
+  servicesList: {
+    marginTop: 20,
+    width: "100%",
+  },
+  serviceOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#D8F1FF",
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 15,
+  },
+  serviceOptionSelected: {
+    borderColor: "#004aad",
+    borderWidth: 2,
+  },
+  serviceText: {
+    fontSize: 15,
+    color: "#000",
+    fontWeight: "500",
+  },
   footer: {
     position: "absolute",
     bottom: 0,
@@ -219,17 +193,15 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: "#f6f6f6",
   },
-
   nextButton: {
     backgroundColor: "#004aad",
     paddingVertical: 16,
     borderRadius: 25,
     alignItems: "center",
   },
-
-  nextText: { 
-    color: "#fff", 
-    fontSize: 16, 
-    fontWeight: "bold" 
+  nextText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

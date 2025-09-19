@@ -8,19 +8,28 @@ import {
   TouchableOpacity,
   Alert 
 } from "react-native";
+import { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function AboutLaundry() {
   const { 
     id, name, distance, rating, image,
     description, addDescription, address,
-    contact, hours, availability, reviews 
+    contact, hours, availability, prices
   } = useLocalSearchParams();
 
-  // Parse reviews JSON if passed as string
-  const parsedReviews = typeof reviews === "string" ? JSON.parse(reviews) : null;
+  // ✅ Parse prices
+  const parsedPrices = typeof prices === "string" ? JSON.parse(prices) : null;
+
+  // Accordion state
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  const toggleSection = (section: string) => {
+    setExpanded(expanded === section ? null : section);
+  };
 
   const handleConfirm = () => {
-      Alert.alert("Confirmed", `You selected ${name}`);
+    Alert.alert("Confirmed", `You selected ${name}`);
   };
 
   return (
@@ -38,8 +47,7 @@ export default function AboutLaundry() {
         <ScrollView contentContainerStyle={styles.container}>
           
           {/* Shop Image */}
-          <Image 
-             source={image} style={styles.image} />
+          <Image source={image} style={styles.image} />
 
           {/* Name + Rating */}
           <Text style={styles.title}>{name}</Text>
@@ -53,25 +61,38 @@ export default function AboutLaundry() {
             {availability}
           </Text>
 
-          {/* Rating Breakdown */}
-          {parsedReviews && (
-            <View style={styles.reviewsContainer}>
-              <Text style={styles.sectionTitle}>Ratings & Reviews</Text>
-              {Object.keys(parsedReviews).reverse().map((star) => (
-                <View key={star} style={styles.reviewRow}>
-                  <Text style={styles.starLabel}>{star} ★</Text>
-                  <View style={styles.barBackground}>
-                    <View 
-                      style={[
-                        styles.barFill, 
-                        { width: `${parsedReviews[star]}%` }
-                      ]} 
+          {/* Price List */}
+          <Text style={styles.sectionTitle}>Price List</Text>
+          {parsedPrices ? (
+            <View style={{ width: "100%" }}>
+              {Object.entries(parsedPrices).map(([category, items]) => (
+                <View key={category} style={styles.accordionSection}>
+                  <TouchableOpacity 
+                    style={styles.accordionHeader}
+                    onPress={() => toggleSection(category)}
+                  >
+                    <Text style={styles.accordionTitle}>
+                      {formatCategoryName(category)}
+                    </Text>
+                    <Ionicons 
+                      name={expanded === category ? "chevron-up" : "chevron-down"} 
+                      size={20} 
+                      color="#333" 
                     />
-                  </View>
-                  <Text style={styles.count}>{parsedReviews[star]}</Text>
+                  </TouchableOpacity>
+                  
+                  {expanded === category && (
+                    <View style={styles.accordionContent}>
+                      {Array.isArray(items) && items.map((p: string, i: number) => (
+                        <Text key={i} style={styles.description}>• {p}</Text>
+                      ))}
+                    </View>
+                  )}
                 </View>
               ))}
             </View>
+          ) : (
+            <Text style={styles.description}>No price list available</Text>
           )}
 
           {/* Description */}
@@ -97,109 +118,34 @@ export default function AboutLaundry() {
   );
 }
 
+// Helper to format category names
+function formatCategoryName(key: string) {
+  switch (key) {
+    case "washFold": return "Wash & Fold";
+    case "washPress": return "Wash & Press";
+    case "pressOnly": return "Press Only";
+    case "washDry": return "Wash & Dry";
+    case "fullService": return "Full Service";
+    default: return key;
+  }
+}
+
 const styles = StyleSheet.create({
-  wrapper: { 
-    flex: 1, 
-    backgroundColor: "#f6f6f6" },
-
-  container: { 
-    alignItems: "center", 
-    padding: 20, 
-    paddingBottom: 100 },
-
-  image: { 
-    width: 200, 
-    height: 200, 
-    borderRadius: 12, 
-    marginBottom: 15 },
-
-  title: { 
-    fontSize: 22, 
-    fontWeight: "bold", 
-    textAlign: "center" },
-
-  info: { 
-    fontSize: 16, 
-    color: "#555", 
-    marginTop: 5 },
-
-  availability: { 
-    fontSize: 16, 
-    marginTop: 8, 
-    fontWeight: "600" },
-
-  available: { 
-    color: "green" },
-
-  unavailable: { 
-    color: "red" },
-
-  sectionTitle: { 
-    fontSize: 18, 
-    fontWeight: "bold", 
-    marginTop: 20, 
-    marginBottom: 5, 
-    alignSelf: "flex-start" },
-
-  description: { 
-    fontSize: 14, 
-    color: "#444", 
-    lineHeight: 20, 
-    marginBottom: 10, 
-    textAlign: "justify" },
-
-  infoText: { 
-    fontSize: 14, 
-    color: "#333", 
-    marginBottom: 4, 
-    alignSelf: "flex-start" },
-
-  reviewsContainer: { 
-    width: "100%", 
-    marginTop: 20 },
-
-  reviewRow: { 
-    flexDirection: "row", 
-    alignItems: "center", 
-    marginBottom: 6 },
-
-  starLabel: { 
-    width: 30, 
-    fontSize: 14 },
-
-  barBackground: { 
-    flex: 1, 
-    height: 8, 
-    backgroundColor: "#ddd", 
-    borderRadius: 4, 
-    marginHorizontal: 6 },
-
-  barFill: { 
-    height: 8, 
-    backgroundColor: "#4caf50", 
-    borderRadius: 4 },
-
-  count: { 
-    width: 30, 
-    fontSize: 12, 
-    textAlign: "right" },
-
-  confirmButton: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    right: 20,
-    backgroundColor: "#0D47A1",
-    paddingVertical: 14,
-    borderRadius: 20,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  confirmText: { 
-    fontSize: 18, 
-    fontWeight: "bold", 
-    color: "#ffffffff" },
+  wrapper: { flex: 1, backgroundColor: "#f6f6f6" },
+  container: { alignItems: "center", padding: 20, paddingBottom: 100 },
+  image: { width: 200, height: 200, borderRadius: 12, marginBottom: 15 },
+  title: { fontSize: 22, fontWeight: "bold", textAlign: "center" },
+  info: { fontSize: 16, color: "#555", marginTop: 5 },
+  availability: { fontSize: 16, marginTop: 8, fontWeight: "600" },
+  available: { color: "green" },
+  unavailable: { color: "red" },
+  sectionTitle: { fontSize: 18, fontWeight: "bold", marginTop: 20, marginBottom: 5, alignSelf: "flex-start" },
+  description: { fontSize: 14, color: "#444", lineHeight: 20, marginBottom: 10, textAlign: "justify" },
+  infoText: { fontSize: 14, color: "#333", marginBottom: 4, alignSelf: "flex-start" },
+  accordionSection: { marginBottom: 10, backgroundColor: "#fff", borderRadius: 8, padding: 10, shadowColor: "#000", shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 },
+  accordionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  accordionTitle: { fontSize: 16, fontWeight: "600", color: "#000" },
+  accordionContent: { marginTop: 8, paddingLeft: 10 },
+  confirmButton: { position: "absolute", bottom: 20, left: 20, right: 20, backgroundColor: "#0D47A1", paddingVertical: 14, borderRadius: 20, alignItems: "center", shadowColor: "#000", shadowOpacity: 0.2, shadowRadius: 4, elevation: 4 },
+  confirmText: { fontSize: 18, fontWeight: "bold", color: "#fff" },
 });

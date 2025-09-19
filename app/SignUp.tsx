@@ -18,7 +18,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       {/* Bubble Background */}
-     /* <Svg height="100%" width="100%" style={styles.bubbles}>
+     /*<Svg height="100%" width="100%" style={styles.bubbles}>
         <Circle cx="50" cy="80" r="40" fill="white" opacity="0.2" />
         <Circle cx="250" cy="120" r="60" fill="white" opacity="0.2" />
         <Circle cx="180" cy="400" r="90" fill="white" opacity="0.15" />

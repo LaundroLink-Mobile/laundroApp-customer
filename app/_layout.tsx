@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import { LogBox } from "react-native";
 
-LogBox.ignoreAllLogs(true); // Ignore all log notifications
+LogBox.ignoreAllLogs(true); 
 
 export default function RootLayout() {
   return (

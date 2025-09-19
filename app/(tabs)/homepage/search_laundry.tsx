@@ -16,14 +16,16 @@ const shops = [
     contact: "09223324839",
     hours: "8am-6pm",
     availability: "Available",
-    reviews: {
-      5: 80,
-      4: 30,
-      3: 10,
-      2: 5,
-      1: 2,
+    prices: { 
+      washFold: [ 
+        "Regular Clothes: ₱25 - ₱60 per kg", 
+        "Blankets, Bed Sheets, Towels: ₱50 - ₱110 per kg", 
+        "Comforters (per piece): ₱200 - ₱125 per kg or more", ], 
+      washPress: ["Regular Clothes: ₱80 - ₱150 per kg"], 
+      pressOnly: ["Regular Clothes: ₱80 - ₱150 per kg"], 
+      washDry: ["₱130 - ₱190 per load"], 
+      fullService: ["₱80 - ₱150 per kg"], }
   },
-},
   { id: "2", 
     name: "Sparklean - Apas", 
     distance: "1km", rating: "4.0", 
@@ -34,13 +36,15 @@ const shops = [
     contact: "09171234567",
     hours: "9am-7pm",
     availability: "Available",
-    reviews: {
-      5: 80,
-      4: 30,
-      3: 10,
-      2: 5,
-      1: 2,
-    }
+    prices: { 
+      washFold: [ 
+        "Regular Clothes: ₱25 - ₱60 per kg", 
+        "Blankets, Bed Sheets, Towels: ₱50 - ₱110 per kg", 
+        "Comforters (per piece): ₱200 - ₱125 per kg or more", ], 
+      washPress: ["Regular Clothes: ₱80 - ₱150 per kg"], 
+      pressOnly: ["Regular Clothes: ₱80 - ₱150 per kg"], 
+      washDry: ["₱130 - ₱190 per load"], 
+      fullService: ["₱80 - ₱150 per kg"], }
   },
   { id: "3", 
     name: "Laundry Cleaning - Cebu", 
@@ -52,13 +56,15 @@ const shops = [
     contact: "09339876543",
     hours: "8am-8pm",
     availability: "Available",
-    reviews: {
-      5: 80,
-      4: 30,
-      3: 10,
-      2: 5,
-      1: 2,
-    }
+    prices: { 
+      washFold: [ 
+        "Regular Clothes: ₱25 - ₱60 per kg", 
+        "Blankets, Bed Sheets, Towels: ₱50 - ₱110 per kg", 
+        "Comforters (per piece): ₱200 - ₱125 per kg or more", ], 
+      washPress: ["Regular Clothes: ₱80 - ₱150 per kg"], 
+      pressOnly: ["Regular Clothes: ₱80 - ₱150 per kg"], 
+      washDry: ["₱130 - ₱190 per load"], 
+      fullService: ["₱80 - ₱150 per kg"], }
   },
   { id: "4", 
     name: "Wash n’ Wait - Lahug", 
@@ -71,13 +77,16 @@ const shops = [
     contact: "09451237890",
     hours: "7am-5pm",
     availability: "Available",
-    reviews: {
-      5: 80,
-      4: 30,
-      3: 10,
-      2: 5,
-      1: 2,
-    }},
+    prices: { 
+      washFold: [ 
+        "Regular Clothes: ₱25 - ₱60 per kg", 
+        "Blankets, Bed Sheets, Towels: ₱50 - ₱110 per kg", 
+        "Comforters (per piece): ₱200 - ₱125 per kg or more", ], 
+      washPress: ["Regular Clothes: ₱80 - ₱150 per kg"], 
+      pressOnly: ["Regular Clothes: ₱80 - ₱150 per kg"], 
+      washDry: ["₱130 - ₱190 per load"], 
+      fullService: ["₱80 - ₱150 per kg"], }
+  },
 ];
 
 const suggestions = ["Laundry Cleaning", "Washdry", "Sparklean"];
@@ -175,49 +184,48 @@ export default function SearchLaundryScreen() {
         {query === "" ? "Recommended" : "Search Results"}
         </Text>
         <FlatList
-            data={filteredShops}
-            keyExtractor={(item) => item.id}
-            scrollEnabled={false}
-            contentContainerStyle={styles.shopList}
-            renderItem={({ item }) => (
-                <Link 
-                href={{
-                    pathname: "./about_laundry",
-                     params: { 
-               id: item.id, 
-              name: item.name, 
-              distance: item.distance, 
-              rating: item.rating, 
-              image: item.image, 
-              description: item.description,
-              addDescription: item.addDescription,
-              address: item.address,
-              contact: item.contact,
-              hours: item.hours,
-              availability: item.availability,
-              reviews: JSON.stringify(item.reviews), 
-             },
-                }}
-                asChild
-                >
-                <Pressable style={styles.shopRow}>
-                    <Image source={item.image} style={styles.shopRowImage} />
-                    <View style={styles.shopRowDetails}>
-                    <Text style={styles.shopRowName}>{item.name}</Text>
-                    <Text style={styles.shopRowInfo}>
-                        {item.distance} • ⭐ {item.rating}
-                    </Text>
-                    </View>
-                </Pressable>
-                </Link>
-            )}
-            ListEmptyComponent={() => (
-                <Text style={{ textAlign: "center", marginTop: 20, color: "#555" }}>
-                No shops found.
-                </Text>
-            )}
-            />
-
+          data={filteredShops}
+          keyExtractor={(item) => item.id}
+          scrollEnabled={false}
+          contentContainerStyle={styles.shopList}
+          renderItem={({ item }) => (
+            <Link 
+              href={{
+                pathname: "./about_laundry",
+                params: { 
+                  id: item.id, 
+                  name: item.name, 
+                  distance: item.distance, 
+                  rating: item.rating, 
+                  image: item.image, 
+                  description: item.description,
+                  addDescription: item.addDescription,
+                  address: item.address,
+                  contact: item.contact,
+                  hours: item.hours,
+                  availability: item.availability,
+                  prices: JSON.stringify(item.prices),   // ✅ make sure this is included
+                },
+              }}
+              asChild
+            >
+              <Pressable style={styles.shopRow}>
+                <Image source={item.image} style={styles.shopRowImage} />
+                <View style={styles.shopRowDetails}>
+                  <Text style={styles.shopRowName}>{item.name}</Text>
+                  <Text style={styles.shopRowInfo}>
+                    {item.distance} • ⭐ {item.rating}
+                  </Text>
+                </View>
+              </Pressable>
+            </Link>
+          )}
+          ListEmptyComponent={() => (
+            <Text style={{ textAlign: "center", marginTop: 20, color: "#555" }}>
+              No shops found.
+            </Text>
+          )}
+        />
       </ScrollView>
     </View>
   );
@@ -230,8 +238,6 @@ const styles = StyleSheet.create({
     paddingTop: 20, 
     paddingHorizontal: 16 
   },
-
-  // 🔍 Search Bar
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -249,114 +255,18 @@ const styles = StyleSheet.create({
   },
   icon: { marginRight: 8 },
   input: { flex: 1, fontSize: 16, color: '#000' },
-
-  // 📌 Section title
-  sectionTitle: { 
-    fontSize: 18, 
-    fontWeight: "bold", 
-    marginBottom: 12 
-  },
-
-  // 💡 Suggestions (chips)
-  suggestionContainer: { 
-    flexDirection: "row", 
-    flexWrap: "wrap", 
-    marginBottom: 10 
-  },
-  suggestionChip: {
-    backgroundColor: "#e0e0e0",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    marginRight: 10,
-    marginBottom: 10,
-  },
+  sectionTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 12 },
+  suggestionContainer: { flexDirection: "row", flexWrap: "wrap", marginBottom: 10 },
+  suggestionChip: { backgroundColor: "#e0e0e0", paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20, marginRight: 10, marginBottom: 10 },
   suggestionText: { fontSize: 14, color: "#333" },
-
-  // 🏪 Shop Grid Card (Recommended view)
-  shopCard: {
-    flex: 1,
-    backgroundColor: "#fff",
-    margin: 8,
-    borderRadius: 12,
-    padding: 10,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  shopImage: { 
-    width: 100, 
-    height: 100, 
-    borderRadius: 12, 
-    marginBottom: 8 
-  },
-  shopName: { 
-    fontSize: 14, 
-    fontWeight: "600", 
-    textAlign: "center" 
-  },
-  shopDetails: { 
-    fontSize: 12, 
-    color: "#555", 
-    marginTop: 4 
-  },
-
-  // 📋 Shop Row (Search results view)
   shopList: { paddingBottom: 20 },
-  shopRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    marginVertical: 6,
-    padding: 10,
-    borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  shopRowImage: {
-    width: 70,
-    height: 70,
-    borderRadius: 10,
-    marginRight: 12,
-  },
+  shopRow: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", marginVertical: 6, padding: 10, borderRadius: 12, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2, elevation: 2 },
+  shopRowImage: { width: 70, height: 70, borderRadius: 10, marginRight: 12 },
   shopRowDetails: { flex: 1 },
-  shopRowName: { 
-    fontSize: 16, 
-    fontWeight: "600", 
-    marginBottom: 4 
-  },
-  shopRowInfo: { 
-    fontSize: 13, 
-    color: "#555" 
-  },
-
-  // 📌 Modal
-  modalOverlay: { 
-    flex: 1, 
-    backgroundColor: "rgba(0,0,0,0.3)", 
-    justifyContent: "center", 
-    alignItems: "center" 
-  },
-  modalContainer: { 
-    backgroundColor: "#fff", 
-    borderRadius: 10, 
-    padding: 10, 
-    width: 250 
-  },
-  modalItem: { 
-    paddingVertical: 12, 
-    paddingHorizontal: 10 
-  },
-  modalText: { 
-    fontSize: 16, 
-    color: "#333" 
-  },
+  shopRowName: { fontSize: 16, fontWeight: "600", marginBottom: 4 },
+  shopRowInfo: { fontSize: 13, color: "#555" },
+  modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.3)", justifyContent: "center", alignItems: "center" },
+  modalContainer: { backgroundColor: "#fff", borderRadius: 10, padding: 10, width: 250 },
+  modalItem: { paddingVertical: 12, paddingHorizontal: 10 },
+  modalText: { fontSize: 16, color: "#333" },
 });
-
-

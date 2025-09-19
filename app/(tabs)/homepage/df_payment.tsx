@@ -8,11 +8,12 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
-import { useRouter, Stack } from "expo-router";
+import { useRouter, Stack, useLocalSearchParams } from "expo-router";
 
 export default function DeliveryPayment() {
   const router = useRouter();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const { services, fabrics, addons, instructions } = useLocalSearchParams();
 
   const options = [
     {
@@ -21,8 +22,7 @@ export default function DeliveryPayment() {
       description:
         "You will bring your laundry directly to the shop. No pickup or delivery fees.",
       icon: <Ionicons name="storefront" size={36} color="#004aad" />,
-      fee: "₱ 0.00", // Customer drops off and picks up themselves
-      route: "/(tabs)/homepage/order_dropoff",
+      fee: "₱ 0.00",
     },
     {
       id: "pickup",
@@ -30,8 +30,7 @@ export default function DeliveryPayment() {
       description:
         "Shop will book a rider to pick up your laundry. You’ll return to the shop to collect it. Rider fee will be confirmed.",
       icon: <FontAwesome5 name="truck" size={36} color="#004aad" />,
-      fee: "To be confirmed", // Shop books Grab/Maxim/etc.
-      route: "/(tabs)/homepage/order_pickup",
+      fee: "To be confirmed",
     },
     {
       id: "delivery",
@@ -39,13 +38,26 @@ export default function DeliveryPayment() {
       description:
         "Shop will book a rider to pick up your laundry and deliver it back to your doorstep. Rider fee will be confirmed.",
       icon: <Ionicons name="bicycle" size={36} color="#004aad" />,
-      fee: "To be confirmed", // Shop books Grab/Maxim/etc.
-      route: "/(tabs)/homepage/order_delivery",
+      fee: "To be confirmed",
     },
   ];
 
-  // Find selected option details
   const selectedDetails = options.find((opt) => opt.id === selectedOption);
+
+  const handleOrder = () => {
+    if (selectedDetails) {
+      router.push({
+        pathname: "/(tabs)/homepage/order_summary",
+        params: {
+          services: services,
+          fabrics: fabrics,
+          addons: addons,
+          instructions: instructions,
+          deliveryOption: selectedDetails.title,
+        },
+      });
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -100,16 +112,14 @@ export default function DeliveryPayment() {
         ))}
       </ScrollView>
 
-      {/* Payment Button */}
+      {/* Order Button */}
       <View style={styles.footer}>
         <TouchableOpacity
           style={[
             styles.paymentButton,
-            !selectedOption && { backgroundColor: "#ccc" }, // disabled style
+            !selectedOption && { backgroundColor: "#ccc" },
           ]}
-          onPress={() =>
-            selectedDetails && router.push(selectedDetails.route)
-          }
+          onPress={handleOrder}
           disabled={!selectedOption}
         >
           <Text style={styles.paymentText}>
@@ -117,24 +127,21 @@ export default function DeliveryPayment() {
               ? `${selectedDetails.fee}   |   ORDER`
               : "Select an option"}
           </Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      </TouchableOpacity>
+    </View>
+  </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#fff" },
-
   container: { padding: 20, paddingBottom: 120 },
-
   headerTitle: {
     color: "#2d2d2dff",
     fontSize: 20,
     fontWeight: "600",
     marginLeft: 20,
   },
-
   instruction: {
     textAlign: "center",
     marginVertical: 15,
@@ -142,7 +149,6 @@ const styles = StyleSheet.create({
     color: "#333",
     lineHeight: 20,
   },
-
   card: {
     backgroundColor: "#fff",
     borderWidth: 1,
@@ -151,21 +157,15 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 15,
   },
-
   cardSelected: { borderColor: "#004aad", borderWidth: 2 },
-
   cardContent: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 12,
   },
-
   cardTitle: { fontSize: 16, fontWeight: "bold", color: "#000" },
-
   cardDesc: { fontSize: 13, color: "#555", marginTop: 2 },
-
   feeText: { fontSize: 14, fontWeight: "600", color: "#e67e22" },
-
   footer: {
     position: "absolute",
     bottom: 0,
@@ -174,13 +174,11 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: "#fff",
   },
-
   paymentButton: {
     backgroundColor: "#004aad",
     paddingVertical: 16,
     borderRadius: 25,
     alignItems: "center",
   },
-
   paymentText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
 });
