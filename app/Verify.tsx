@@ -7,16 +7,20 @@ import {
   StyleSheet, 
   Alert 
 } from "react-native";
-import { Link } from 'expo-router';
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 
-const VerificationScreen: React.FC = () => {
+export default function Verify() {
   const [code, setCode] = useState("");
   const router = useRouter();
+  const { fullName, email, phone } = useLocalSearchParams();
 
   const handleSubmit = () => {
     if (code.length === 6) {
-      router.push("/");
+      // After verification → go back to login
+      router.replace({
+        pathname: "/",
+        params: { fullName, signupEmail: email, phone },
+      });
     } else {
       Alert.alert("Error", "Please enter a 6-digit code.");
     }
@@ -24,14 +28,13 @@ const VerificationScreen: React.FC = () => {
 
   const handleResend = () => {
     Alert.alert("Info", "Verification code resent.");
-    // TODO: Trigger API to resend verification code
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>LaundroLink</Text>
       <Text style={styles.instructions}>
-        A verification code has been sent to the number you provided. 
+        A verification code has been sent to your number. 
         Enter the code below to continue.
       </Text>
 
@@ -51,16 +54,12 @@ const VerificationScreen: React.FC = () => {
         </Text>
       </TouchableOpacity>
 
-    
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>
- 
     </View>
   );
-};
-
-export default VerificationScreen;
+}
 
 const styles = StyleSheet.create({
   container: {

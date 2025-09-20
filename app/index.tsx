@@ -1,27 +1,37 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-import { Link, useRouter } from "expo-router";
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  StyleSheet 
+} from "react-native";
+import { Link, useRouter, useLocalSearchParams } from "expo-router";
 import { AntDesign, FontAwesome } from "@expo/vector-icons"; 
-
 
 export default function Index() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
+  // Data from Verify
+  const { fullName, signupEmail, phone } = useLocalSearchParams();
+
   const handleLogin = () => {
-    // TODO: validate login with API
-    router.replace("/editProfile"); // goes to Edit Profile
+    router.replace({
+      pathname: "/editProfile",
+      params: {
+        fullName: fullName ? String(fullName) : "Customer Name",
+        phone: phone ? String(phone) : "",
+        email: signupEmail ? String(signupEmail) : email,
+      },
+    });
   };
 
   return (
     <View style={styles.container}>
-
-      {/* Title */}
       <Text style={styles.title}>LaundroLink</Text>
-     
 
-      {/* Email Input */}
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -29,9 +39,8 @@ export default function Index() {
         keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
+        autoCapitalize="none"
       />
-
-      {/* Password Input */}
       <TextInput
         style={styles.input}
         placeholder="Password"
@@ -41,12 +50,10 @@ export default function Index() {
         onChangeText={setPassword}
       />
 
-      {/* Login Button */}
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
-      {/* Signup Redirect */}
       <View style={styles.signupContainer}>
         <Text style={styles.signupText}>Don't have an account?</Text>
         <Link href="/SignUp" style={styles.signupLink}>
@@ -54,16 +61,15 @@ export default function Index() {
         </Link>
       </View>
 
-      {/* Divider */}
       <Text style={styles.orText}>────────  or  ────────</Text>
 
-      {/* Google Sign Up */}
+      {/* Login with Google (unchanged) */}
       <TouchableOpacity style={styles.socialButton}>
         <AntDesign name="google" size={20} color="#DB4437" style={{ marginRight: 8 }} />
         <Text style={styles.socialText}>Sign up with Google</Text>
       </TouchableOpacity>
 
-      {/* Phone Sign Up */}
+      {/* Login with Phone (unchanged) */}
       <TouchableOpacity style={styles.socialButton}>
         <FontAwesome name="phone" size={20} color="#000000ff" style={{ marginRight: 8 }} />
         <Text style={styles.socialText}>Sign up with Phone</Text>
@@ -85,12 +91,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#003366",
     marginBottom: 30,
-  },
-  label: {
-    alignSelf: "flex-start",
-    fontSize: 14,
-    marginBottom: 5,
-    color: "#000",
   },
   input: {
     width: "100%",

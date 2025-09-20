@@ -1,6 +1,6 @@
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Link, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -16,16 +16,17 @@ import {
   View,
 } from "react-native";
 
-
-
 const EditProfileScreen: React.FC = () => {
   const router = useRouter();
-  const [addresses, setAddresses] = useState<string[]>([""]);
-  const [payments, setPayments] = useState<any[]>([]); // list of payment objects
 
+  // Get data from login/index
+  const { fullName, phone: passedPhone, email: passedEmail } = useLocalSearchParams();
+
+  const [addresses, setAddresses] = useState<string[]>([""]);
+  const [payments, setPayments] = useState<any[]>([]);
   const [profilePic, setProfilePic] = useState<string | null>(null);
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState(passedPhone ? String(passedPhone) : "");
+  const [email, setEmail] = useState(passedEmail ? String(passedEmail) : "");
 
   // Modal states
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -34,7 +35,7 @@ const EditProfileScreen: React.FC = () => {
   // Payment form states
   const [gcashNumber, setGcashNumber] = useState("");
   const [gcashName, setGcashName] = useState("");
-  
+
   const addAddress = () => {
     setAddresses([...addresses, ""]);
   };
@@ -46,112 +47,110 @@ const EditProfileScreen: React.FC = () => {
 
   const addPayment = () => {
     setShowPaymentModal(true);
-    setPaymentType(null); // reset
+    setPaymentType(null);
   };
 
-const savePayment = () => {
-  if (paymentType === "GCash") {
-    if (!gcashName || !gcashNumber) {
-      Alert.alert("Please enter GCash info");
-      return;
+  const savePayment = () => {
+    if (paymentType === "GCash") {
+      if (!gcashName || !gcashNumber) {
+        Alert.alert("Please enter GCash info");
+        return;
+      }
+      setPayments([...payments, { type: "GCash", name: gcashName, number: gcashNumber }]);
+      setGcashName("");
+      setGcashNumber("");
+    } else if (paymentType === "Cash") {
+      setPayments([...payments, { type: "Cash", name: "Cash Payment", number: "" }]);
     }
-    setPayments([...payments, { type: "GCash", name: gcashName, number: gcashNumber }]);
-    setGcashName("");
-    setGcashNumber("");
-  } else if (paymentType === "Cash") {
-    setPayments([...payments, { type: "Cash", name: "Cash Payment", number: "" }]);
-  }
 
-  setShowPaymentModal(false);
-  setPaymentType(null);
-};
-
+    setShowPaymentModal(false);
+    setPaymentType(null);
+  };
 
   const removePayment = (index: number) => {
     const updated = payments.filter((_, i) => i !== index);
     setPayments(updated);
   };
 
-
   const saveProfile = () => {
     console.log({ phone, email, addresses, payments, profilePic });
     Alert.alert("Profile saved!");
-    router.replace("/homepage/homepage"); 
+    router.replace("/homepage/homepage");
   };
 
   const changeProfilePic = () => {
     Alert.alert("Change Profile Picture", "Choose an option", [
-        {
+      {
         text: "Camera",
         onPress: async () => {
-            const { status } = await ImagePicker.requestCameraPermissionsAsync();
-            if (status !== "granted") {
+          const { status } = await ImagePicker.requestCameraPermissionsAsync();
+          if (status !== "granted") {
             alert("Camera permission denied!");
             return;
-            }
+          }
 
-            const result = await ImagePicker.launchCameraAsync({
+          const result = await ImagePicker.launchCameraAsync({
             allowsEditing: true,
             aspect: [1, 1],
             quality: 1,
-            });
+          });
 
-            if (!result.canceled) {
+          if (!result.canceled) {
             setProfilePic(result.assets[0].uri);
-            }
+          }
         },
-        },
-        {
+      },
+      {
         text: "Gallery",
         onPress: async () => {
-            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-            if (status !== "granted") {
+          const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+          if (status !== "granted") {
             alert("Gallery permission denied!");
             return;
-            }
+          }
 
-            const result = await ImagePicker.launchImageLibraryAsync({
+          const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             aspect: [1, 1],
             quality: 1,
-            });
+          });
 
-            if (!result.canceled) {
+          if (!result.canceled) {
             setProfilePic(result.assets[0].uri);
-            }
+          }
         },
-        },
-        { text: "Cancel", style: "cancel" },
+      },
+      { text: "Cancel", style: "cancel" },
     ]);
-    };
-
+  };
 
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar barStyle="dark-content" />
       <ScrollView contentContainerStyle={styles.content}>
-      
         {/* Avatar */}
         <View style={styles.avatarWrap}>
-  {profilePic ? (
-    <Image source={{ uri: profilePic }} style={styles.avatarImg} />
-  ) : (
-    <View style={styles.avatar}>
-      <Text style={styles.avatarInitials}>MJ</Text>
-    </View>
-  )}
+          {profilePic ? (
+            <Image source={{ uri: profilePic }} style={styles.avatarImg} />
+          ) : (
+            <View style={styles.avatar}>
+              <Text style={styles.avatarInitials}>
+                {fullName ? String(fullName).charAt(0) : "C"}
+              </Text>
+            </View>
+          )}
 
-  {/* Pen icon overlay */}
-  <TouchableOpacity style={styles.editIconWrap} onPress={changeProfilePic}>
-    <MaterialIcons name="edit" size={22} color={COLORS.white} />
-  </TouchableOpacity>
-</View>
+          {/* Pen icon overlay */}
+          <TouchableOpacity style={styles.editIconWrap} onPress={changeProfilePic}>
+            <MaterialIcons name="edit" size={22} color={COLORS.white} />
+          </TouchableOpacity>
+        </View>
 
-        {/* Name */}
-        <Text style={styles.name}>MJ Dimpas</Text>
+        {/* Full Name (display only) */}
+        <Text style={styles.name}>{fullName ? String(fullName) : "Customer Name"}</Text>
 
-        {/* Phone */}
+        {/* Phone (editable) */}
         <TextInput
           style={styles.input}
           value={phone}
@@ -161,7 +160,7 @@ const savePayment = () => {
           keyboardType="phone-pad"
         />
 
-        {/* Email */}
+        {/* Email (editable) */}
         <TextInput
           style={styles.input}
           value={email}
@@ -265,10 +264,7 @@ const savePayment = () => {
               </>
             ) : (
               <>
-              
-                <Text style={styles.modalTitle}>
-                  {paymentType} Information
-                </Text>
+                <Text style={styles.modalTitle}>{paymentType} Information</Text>
                 {paymentType === "GCash" ? (
                   <>
                     <TextInput
@@ -285,15 +281,8 @@ const savePayment = () => {
                       keyboardType="phone-pad"
                     />
                   </>
-                ) : (
-                  <>
-                    
-                  </>
-                )}
-                <TouchableOpacity
-                  style={styles.modalBtn}
-                  onPress={savePayment}
-                >
+                ) : null}
+                <TouchableOpacity style={styles.modalBtn} onPress={savePayment}>
                   <Text style={styles.modalBtnText}>Save</Text>
                 </TouchableOpacity>
               </>
@@ -319,16 +308,7 @@ const COLORS = {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.sky },
   content: { padding: 20, paddingBottom: 32 },
-  title: {
-    fontSize: 26,
-    fontWeight: "800",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  avatarWrap: {
-    alignItems: "center",
-    marginVertical: 12,
-  },
+  avatarWrap: { alignItems: "center", marginVertical: 12 },
   avatar: {
     width: 100,
     height: 100,
@@ -337,24 +317,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  avatarImg: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-  },
-  avatarInitials: {
-    fontSize: 32,
-    fontWeight: "800",
-    color: COLORS.white,
-  },
+  avatarImg: { width: 100, height: 100, borderRadius: 50 },
+  avatarInitials: { fontSize: 32, fontWeight: "800", color: COLORS.white },
   editIconWrap: {
-  position: "absolute",
-  bottom: 0,
-  right: 120, 
-  backgroundColor: COLORS.primary,
-  borderRadius: 16,
-  padding: 6,
-},
+    position: "absolute",
+    bottom: 0,
+    right: 120,
+    backgroundColor: COLORS.primary,
+    borderRadius: 16,
+    padding: 6,
+  },
   name: {
     fontSize: 20,
     fontWeight: "600",
@@ -383,31 +355,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 6,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-  },
-  addBtn: {
-    fontSize: 16,
-    color: COLORS.primary,
-    fontWeight: "600",
-  },
-  addressRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 4,
-  },
+  sectionTitle: { fontSize: 18, fontWeight: "700" },
+  addBtn: { fontSize: 16, color: COLORS.primary, fontWeight: "600" },
+  addressRow: { flexDirection: "row", alignItems: "center", marginVertical: 4 },
   removeBtn: {
     marginLeft: 10,
     backgroundColor: COLORS.lightGray,
     borderRadius: 4,
     padding: 6,
   },
-  removeText: {
-    color: COLORS.iconGray,
-    fontWeight: "700",
-    fontSize: 14,
-  },
+  removeText: { color: COLORS.iconGray, fontWeight: "700", fontSize: 14 },
   saveBtn: {
     marginTop: 28,
     backgroundColor: COLORS.primary,
@@ -415,11 +372,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
   },
-  saveBtnText: {
-    color: COLORS.white,
-    fontSize: 18,
-    fontWeight: "700",
-  },
+  saveBtnText: { color: COLORS.white, fontSize: 18, fontWeight: "700" },
   modalOverlay: {
     flex: 1,
     justifyContent: "center",
@@ -433,12 +386,7 @@ const styles = StyleSheet.create({
     padding: 20,
     width: "100%",
   },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    marginBottom: 12,
-    textAlign: "center",
-  },
+  modalTitle: { fontSize: 20, fontWeight: "700", marginBottom: 12, textAlign: "center" },
   modalBtn: {
     backgroundColor: COLORS.primary,
     padding: 12,
@@ -446,13 +394,7 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     alignItems: "center",
   },
-  modalBtnText: {
-    color: COLORS.white,
-    fontSize: 16,
-    fontWeight: "600",
-  },
-
-
+  modalBtnText: { color: COLORS.white, fontSize: 16, fontWeight: "600" },
 });
 
 export default EditProfileScreen;
