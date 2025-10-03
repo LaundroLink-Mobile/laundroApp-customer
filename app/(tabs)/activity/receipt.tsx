@@ -1,63 +1,100 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Linking, ScrollView } from "react-native";
+import React, { useLayoutEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useRouter, useNavigation } from "expo-router";
 
 export default function Receipt() {
   const router = useRouter();
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: true,
+      headerStyle: {
+        backgroundColor: "#89CFF0",
+        borderBottomWidth: 1.5,
+        borderBottomColor: "#5EC1EF",
+      },
+      headerTintColor: "#000",
+      headerShadowVisible: false,
+      headerTitle: () => (
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Text
+            style={{
+              color: "#2d2d2d",
+              marginLeft: 5,
+              fontSize: 20,
+              fontWeight: "600",
+            }}
+          >
+            Receipt
+          </Text>
+        </View>
+      ),
+    });
+  }, [navigation]);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
-      {/* Logo + Icon */}
+    <ScrollView style={styles.container} contentContainerStyle={{ flexGrow: 1 }}>
+      {/* Success Icon */}
       <View style={styles.header}>
-        <Text style={styles.logo}>LaundroLink</Text>
-        <Ionicons name="checkmark-done-circle-outline" size={80} color="#004aad" />
-        <Text style={styles.successText}>Payment Successful!</Text>
+        <Ionicons name="checkmark-done-circle" size={90} color="#004aad" />
+        <Text style={styles.successText}>Payment Successful</Text>
       </View>
 
-      {/* Receipt Details */}
-      <View style={styles.section}>
-        <Text style={styles.label}>Receipt #: <Text style={styles.value}>RCPT-2025-0911-001</Text></Text>
-        <Text style={styles.label}>Date Issued: <Text style={styles.value}>01 Sept 2025</Text></Text>
+      {/* Receipt Info */}
+      <View style={styles.card}>
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>Receipt #</Text>
+          <Text style={styles.value}>RCPT-2025-0911-001</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>Date Issued</Text>
+          <Text style={styles.value}>01 Sept 2025</Text>
+        </View>
       </View>
 
       {/* Payment Summary */}
-      <View style={styles.section}>
+      <View style={styles.card}>
         <Text style={styles.subHeader}>Payment Summary</Text>
         <View style={styles.row}>
-          <Text>Laundry (Wash & Fold – 5kg)</Text>
-          <Text>₱250</Text>
+          <Text style={styles.item}>Laundry (Wash & Fold – 5kg)</Text>
+          <Text style={styles.price}>₱250</Text>
         </View>
         <View style={styles.row}>
-          <Text>Service Fee</Text>
-          <Text>₱50</Text>
+          <Text style={styles.item}>Service Fee</Text>
+          <Text style={styles.price}>₱50</Text>
         </View>
         <View style={styles.row}>
-          <Text>Delivery Fee</Text>
-          <Text>₱70</Text>
+          <Text style={styles.item}>Delivery Fee</Text>
+          <Text style={styles.price}>₱70</Text>
         </View>
-        <View style={styles.row}>
-          <Text style={styles.bold}>Total Paid</Text>
-          <Text style={styles.bold}>₱370</Text>
+        <View style={[styles.row, styles.totalRow]}>
+          <Text style={styles.totalText}>Total Paid</Text>
+          <Text style={styles.totalText}>₱370</Text>
         </View>
       </View>
 
-      {/* Thank You Note */}
-      <View style={styles.section}>
+      {/* Thank You */}
+      <View style={styles.card}>
         <Text style={styles.thankYou}>Thank you for using LaundroLink!</Text>
         <Text style={styles.note}>
           We appreciate your trust and look forward to serving you again.
         </Text>
       </View>
 
-      {/* Contact Info */}
-      <View style={styles.section}>
-        <Text style={styles.note}>Need help? Send as a direct message or call (123) 456-7890
+      {/* Contact */}
+      <View style={styles.card}>
+        <Text style={styles.contactText}>
+          📞 Need help? Call <Text style={styles.highlight}>(123) 456-7890</Text> or send us a direct message.
         </Text>
       </View>
 
-      {/* Track My Order Button */}
-      <TouchableOpacity style={styles.button} onPress={() => router.push("/(tabs)/activity/track_order")}>
+      {/* Button */}
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.push("/(tabs)/activity/track_order")}
+      >
         <Text style={styles.buttonText}>Track My Order</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -65,86 +102,69 @@ export default function Receipt() {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: "#89CFF0" 
-},
+  container: { flex: 1, backgroundColor: "#f4f8fc" },
 
-  header: { 
-    alignItems: "center", 
-    marginVertical: 20 
-},
+  header: { alignItems: "center", marginVertical: 20 },
+  successText: { fontSize: 20, fontWeight: "bold", color: "#004aad", marginTop: 10 },
 
-  logo: { 
-    fontSize: 22, 
-    fontWeight: "bold", 
-    color: "#004aad", 
-    marginBottom: 10 
-},
+  card: {
+    backgroundColor: "#fff",
+    marginHorizontal: 15,
+    marginVertical: 8,
+    padding: 18,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 2,
+  },
 
-  successText: { 
-    fontSize: 18, 
-    fontWeight: "bold", 
-    color: "#004aad", 
-    marginTop: 10 
-},
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 6,
+  },
+  label: { fontSize: 14, color: "#555" },
 
-  section: { 
-    padding: 20, 
-    borderBottomWidth: 1, 
-    borderColor: "#a3c8f0" 
-},
+  value: { fontSize: 14, fontWeight: "600", color: "#000" },
 
-  label: { 
-    fontSize: 14, 
-    marginVertical: 3 
-},
+  subHeader: {
+    fontWeight: "bold",
+    fontSize: 16,
+    marginBottom: 12,
+    color: "#004aad",
+    textAlign: "center",
+  },
 
-  value: { 
-    fontWeight: "bold" 
-},
+  row: { flexDirection: "row", justifyContent: "space-between", marginVertical: 6 },
 
-  subHeader: { 
-    fontWeight: "bold", 
-    fontSize: 16, 
-    marginBottom: 8, 
-    color: "#004aad" 
-},
+  item: { fontSize: 14, color: "#444" },
 
-  row: { 
-    flexDirection: "row", 
-    justifyContent: "space-between", 
-    marginVertical: 4 
-},
+  price: { fontSize: 14, color: "#000" },
 
-  bold: { 
-    fontWeight: "bold" 
-},
+  totalRow: { marginTop: 12, borderTopWidth: 1, borderColor: "#ddd", paddingTop: 10 },
 
-  thankYou: { 
-    fontWeight: "bold", 
-    fontSize: 15, 
-    marginBottom: 5, 
-    textAlign: "center" 
-},
+  totalText: { fontWeight: "bold", fontSize: 15, color: "#000" },
 
-  note: { 
-    fontSize: 13, 
-    textAlign: "center", 
-    color: "#333" 
-},
+  thankYou: { fontWeight: "bold", fontSize: 15, marginBottom: 5, textAlign: "center", color: "#004aad" },
+  
+  note: { fontSize: 13, textAlign: "center", color: "#666" },
+
+  contactText: { fontSize: 13, textAlign: "center", color: "#333", lineHeight: 18 },
+  highlight: { fontWeight: "bold", color: "#004aad" },
 
   button: {
     margin: 20,
     backgroundColor: "#004aad",
-    padding: 15,
-    borderRadius: 10,
+    paddingVertical: 16,
+    borderRadius: 12,
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+    elevation: 3,
   },
-
-  buttonText: { 
-    color: "#fff", 
-    fontWeight: "bold", 
-    fontSize: 16 
-},
+  buttonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
 });

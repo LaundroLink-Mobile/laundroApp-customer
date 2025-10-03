@@ -1,13 +1,38 @@
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Image, Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter, useNavigation } from "expo-router";
-import { HeaderTitle } from "@react-navigation/elements";
-
 
 export default function Message() {
   const router = useRouter();
   const navigation = useNavigation();
+
+  const [messages, setMessages] = useState([
+    {
+      id: "1",
+      logo: require("@/assets/images/washndry.png"),
+      title: "Wash n' Dry",
+      message: "Order update: Price confirmed",
+      time: "08:26PM",
+      unread: true,
+    },
+    {
+      id: "2",
+      logo: require("@/assets/images/24hour.jpg"),
+      title: "24-Hour Laundry",
+      message: "Good day! I just wanted to say thank you for your excellent laundry service...",
+      time: "08:26PM",
+      unread: false,
+    },
+    {
+      id: "3",
+      logo: require("@/assets/images/laundry.avif"),
+      title: "Laundry Cleaning",
+      message: "Thank you for the great service! My clothes came back fresh and neatly folded...",
+      time: "05:50PM",
+      unread: true,
+    },
+    // ... add more messages
+  ]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -19,77 +44,36 @@ export default function Message() {
       },
       headerTintColor: "#2d2d2dff",
       headerShadowVisible: false,
-      headerTitle: () => (
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-      
-          <Text style={styles.headerTitle}>Messages</Text>
-        </View>
-      ),
+      headerTitle: () => <Text style={styles.headerTitle}>Messages</Text>,
     });
   }, [navigation]);
 
-  // Sample message data
-  const messages = [
-    {
-      logo: require("@/assets/images/washndry.png"),
-      title: "Wash n' Dry",
-      message: "Order update: Price confirmed",
-      time: "08:26PM",
-    },
-    {
-      logo: require("@/assets/images/24hour.jpg"),
-      title: "24-Hour Laundry",
-      message: "Good day! I just wanted to say thank you for your excellent laundry service...",
-      time: "08:26PM",
-    },
-    {
-      logo: require("@/assets/images/laundry.avif"),
-      title: "Laundry Cleaning",
-      message: "Thank you for the great service! My clothes came back fresh and neatly folded...",
-      time: "05:50PM",
-    },
-    {
-      logo: require("@/assets/images/sparklean.jpg"),
-      title: "Sparklean Laundry",
-      message: "Appreciate your fast and reliable laundry service. Always happy with the results!",
-      time: "01:15PM",
-    },
-    {
-      logo: require("@/assets/images/washnwait.jpg"),
-      title: "Wash n Wait",
-      message: "Clothes were perfectly cleaned and well taken care of. Thank you for the excellent work!",
-      time: "27 Mar 2025",
-    },
-    {
-      logo: require("@/assets/images/vlaundry.jpg"),
-      title: "V Laundry",
-      message: "Very impressed with your service, as always! Keep up the good work.",
-      time: "07 Mar 2025",
-    },
-    {
-      logo: require("@/assets/images/fauget.jpg"),
-      title: "Fauget Laundry",
-      message: "Thank you!",
-      time: "15 Feb 2025",
-    },
-  ];
+  const handlePress = (id: string, item: any) => {
+    // Mark the message as read
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === id ? { ...msg, unread: false } : msg
+      )
+    );
+
+    // Navigate to message detail
+    router.push({
+      pathname: "/message/message_pay",
+      params: {
+        shopName: item.title,
+        message: item.message,
+        time: item.time,
+      },
+    });
+  };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ padding: 16 }}>
-      {messages.map((item, index) => (
+      {messages.map((item) => (
         <Pressable
-          key={index}
-          style={styles.card}
-          onPress={() => {
-            router.push({
-              pathname: "/message/message_pay",
-              params: {
-                shopName: item.title,
-                message: item.message,
-                time: item.time,
-              },
-            });
-          }}
+          key={item.id}
+          style={[styles.card, item.unread && styles.unreadCard]}
+          onPress={() => handlePress(item.id, item)}
         >
           <Image source={item.logo} style={styles.logo} />
           <View style={styles.messageContent}>
@@ -101,6 +85,11 @@ export default function Message() {
               {item.message}
             </Text>
           </View>
+          {item.unread && (
+            <View style={styles.unreadBadge}>
+              <Text style={styles.unreadText}>NEW</Text>
+            </View>
+          )}
         </Pressable>
       ))}
     </ScrollView>
@@ -112,29 +101,36 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f6f6f6",
   },
-  headerTitle:{
+  headerTitle: {
     color: "#2d2d2dff",
-                fontSize: 20,
-                fontWeight: "600",          
+    fontSize: 20,
+    fontWeight: "600",
   },
   card: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 12,
+    padding: 14,
+    borderRadius: 12,
+    marginBottom: 14,
     shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+    elevation: 4,
+    position: "relative",
+  },
+  unreadCard: {
+    borderLeftWidth: 4,
+    borderLeftColor: "#1E90FF",
   },
   logo: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 12,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    marginRight: 14,
+    borderWidth: 1,
+    borderColor: "#ddd",
   },
   messageContent: {
     flex: 1,
@@ -146,16 +142,29 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "700",
     color: "#000",
   },
   time: {
     fontSize: 12,
-    color: "#666",
+    color: "#888",
   },
   message: {
     fontSize: 14,
     color: "#555",
     marginTop: 4,
+  },
+  unreadBadge: {
+    backgroundColor: "#1E90FF",
+    borderRadius: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    marginLeft: 8,
+    alignSelf: "flex-start",
+  },
+  unreadText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "700",
   },
 });

@@ -70,7 +70,7 @@ export default function Homepage() {
 
   return (
     <>
-      {/* ✅ Header setup using expo-router's Stack.Screen */}
+      {/* ✅ Header setup */}
       <Stack.Screen
         options={{
           headerShown: true,
@@ -114,17 +114,14 @@ export default function Homepage() {
       <View style={styles.container}>
         {/* Search bar */}
         <Link href="./search_laundry" asChild>
-          <Pressable
-            style={styles.searchBar}
-            onPress={() => console.log("Search Laundry Shops")}
-          >
+          <Pressable style={styles.searchBar}>
             <Ionicons name="search" size={20} color="#888" style={styles.icon} />
             <Text style={styles.placeholder}>Search laundry shops</Text>
           </Pressable>
         </Link>
 
         {/* Section title */}
-        <Text style={styles.sectionTitle}>Laundry Shops nearby</Text>
+        <Text style={styles.sectionTitle}>Laundry Shops Nearby</Text>
 
         {/* Shops grid */}
         <FlatList
@@ -158,6 +155,16 @@ export default function Homepage() {
                 <Text style={styles.shopDetails}>
                   {item.distance} • ⭐ {item.rating}
                 </Text>
+
+                {/* ✅ Availability badge */}
+                <View
+                  style={[
+                    styles.badge,
+                    { backgroundColor: item.availability === "Available" ? "#4CAF50" : "#FF5252" },
+                  ]}
+                >
+                  <Text style={styles.badgeText}>{item.availability}</Text>
+                </View>
               </Pressable>
             </Link>
           )}
@@ -170,8 +177,8 @@ export default function Homepage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f3f3f3ff",
-    paddingTop: 50,
+    backgroundColor: "#f8f9fb",
+    paddingTop: 30,
     paddingHorizontal: 16,
   },
   searchBar: {
@@ -179,28 +186,29 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
     width: "100%",
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 25,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.08,
     shadowRadius: 2,
     elevation: 2,
-    marginBottom: 20,
+    marginBottom: 22,
   },
   icon: {
     marginRight: 8,
   },
   placeholder: {
-    fontSize: 20,
-    color: "#888",
-    fontWeight: "bold",
+    fontSize: 16,
+    color: "#777",
+    fontWeight: "500",
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 12,
+    fontWeight: "700",
+    marginBottom: 16,
+    color: "#2d2d2d",
   },
   shopList: {
     paddingBottom: 20,
@@ -209,29 +217,46 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     margin: 8,
-    borderRadius: 12,
-    padding: 10,
+    borderRadius: 16,
+    padding: 14,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 3,
   },
   shopImage: {
-    width: 100,
-    height: 100,
+    width: 110,
+    height: 110,
     borderRadius: 12,
-    marginBottom: 8,
+    marginBottom: 10,
   },
   shopName: {
     fontSize: 14,
     fontWeight: "600",
     textAlign: "center",
+    color: "#333",
   },
   shopDetails: {
     fontSize: 12,
-    color: "#555",
+    color: "#666",
     marginTop: 4,
+  },
+  badge: {
+    marginTop: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#fff",
   },
 });

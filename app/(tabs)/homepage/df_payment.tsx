@@ -99,15 +99,35 @@ export default function DeliveryPayment() {
               selectedOption === option.id && styles.cardSelected,
             ]}
             onPress={() => setSelectedOption(option.id)}
+            activeOpacity={0.9}
           >
             <View style={styles.cardContent}>
               {option.icon}
               <View style={{ flex: 1, marginLeft: 12 }}>
-                <Text style={styles.cardTitle}>{option.title}</Text>
+                <Text
+                  style={[
+                    styles.cardTitle,
+                    selectedOption === option.id && { color: "#004aad" },
+                  ]}
+                >
+                  {option.title}
+                </Text>
                 <Text style={styles.cardDesc}>{option.description}</Text>
               </View>
+
+              {/* Checkmark if selected */}
+              {selectedOption === option.id && (
+                <Ionicons name="checkmark-circle" size={22} color="#004aad" />
+              )}
             </View>
-            <Text style={styles.feeText}>{option.fee}</Text>
+            <Text
+              style={[
+                styles.feeText,
+                selectedOption === option.id && { color: "#004aad" },
+              ]}
+            >
+              {option.fee}
+            </Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -124,12 +144,12 @@ export default function DeliveryPayment() {
         >
           <Text style={styles.paymentText}>
             {selectedDetails
-              ? `${selectedDetails.fee}   |   ORDER`
+              ? `${selectedDetails.fee}   |   Confirm Order`
               : "Select an option"}
           </Text>
-      </TouchableOpacity>
-    </View>
-  </SafeAreaView>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -156,8 +176,17 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 15,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
-  cardSelected: { borderColor: "#004aad", borderWidth: 2 },
+  cardSelected: {
+    borderColor: "#004aad",
+    borderWidth: 2,
+    backgroundColor: "#E3F2FD", // ✅ subtle highlight
+  },
   cardContent: {
     flexDirection: "row",
     alignItems: "center",
@@ -173,6 +202,8 @@ const styles = StyleSheet.create({
     right: 0,
     padding: 15,
     backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderColor: "#eee",
   },
   paymentButton: {
     backgroundColor: "#004aad",

@@ -1,4 +1,4 @@
-import { Link, router, useNavigation, useRouter } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import { useLayoutEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 
@@ -22,7 +22,7 @@ export default function Payment() {
               color: "#2d2d2dff",
               marginLeft: 5,
               fontSize: 20,
-              fontWeight: "600",
+              fontWeight: "700",
             }}
           >
             Payment
@@ -31,6 +31,33 @@ export default function Payment() {
       ),
     });
   }, [navigation]);
+
+  // Payment history data
+  const historyData = [
+    { date: "Apr 30", amount: "₱ 450.00", status: "Paid", invoice: "#LAU123456" },
+    { date: "Apr 02", amount: "₱ 250.00", status: "Cancelled", invoice: "#ABC078365" },
+    { date: "Mar 15", amount: "₱ 300.00", status: "Paid", invoice: "#IJE638975" },
+    { date: "Feb 27", amount: "₱ 400.00", status: "Refunded", invoice: "#CBI927648" },
+    { date: "Feb 10", amount: "₱ 350.00", status: "Paid", invoice: "#XYZ123456" },
+    { date: "Jan 25", amount: "₱ 500.00", status: "Paid", invoice: "#LMN654321" },
+    { date: "Jan 10", amount: "₱ 275.00", status: "Cancelled", invoice: "#QRS987654" },
+    { date: "Dec 30", amount: "₱ 600.00", status: "Paid", invoice: "#TUV321987" },
+    { date: "Dec 15", amount: "₱ 425.00", status: "Refunded", invoice: "#GHI456789" },
+    { date: "Nov 28", amount: "₱ 375.00", status: "Paid", invoice: "#JKL789123" },
+  ];
+
+  const getStatusStyle = (status: string) => {
+    switch (status) {
+      case "Paid":
+        return { backgroundColor: "#d4edda", color: "#2e7d32" };
+      case "Cancelled":
+        return { backgroundColor: "#f8d7da", color: "#c62828" };
+      case "Refunded":
+        return { backgroundColor: "#fff3cd", color: "#ff8f00" };
+      default:
+        return { backgroundColor: "#e0e0e0", color: "#555" };
+    }
+  };
 
   return (
     <ScrollView 
@@ -47,50 +74,49 @@ export default function Payment() {
         </View>
         <View style={styles.recentRow}>
           <Text style={styles.invoice}>#LAU123456</Text>
-          <Text style={styles.paid}>Paid</Text>
+          <View style={[styles.statusBadge, getStatusStyle("Paid")]}>
+            <Text style={[styles.statusText, { color: getStatusStyle("Paid").color }]}>Paid</Text>
+          </View>
         </View>
-         <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push("/(tabs)/payment/invoice")}
-      >
-        <Text style={styles.buttonText}>View Invoice</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          activeOpacity={0.7}
+          onPress={() =>
+            router.push({
+              pathname: "/(tabs)/payment/invoice",
+              params: { invoice: "#LAU123456", amount: "₱ 450.00", status: "Paid", date: "Apr 30, 2025" },
+            })
+          }
+        >
+          <Text style={styles.buttonText}>View Invoice</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Payment History */}
       <Text style={[styles.sectionTitle, { marginTop: 20 }]}>Payment History</Text>
-      
-      {[
-        { date: "Apr 30", amount: "₱ 450.00", status: "Paid", invoice: "#LAU123456" },
-        { date: "Apr 02", amount: "₱ 250.00", status: "Cancelled", invoice: "#ABC078365" },
-        { date: "Mar 15", amount: "₱ 300.00", status: "Paid", invoice: "#IJE638975" },
-        { date: "Feb 27", amount: "₱ 400.00", status: "Refunded", invoice: "#CBI927648" },
-        { date: "Feb 10", amount: "₱ 350.00", status: "Paid", invoice: "#XYZ123456" },
-        { date: "Jan 25", amount: "₱ 500.00", status: "Paid", invoice: "#LMN654321" },
-        { date: "Jan 10", amount: "₱ 275.00", status: "Cancelled", invoice: "#QRS987654" },
-        { date: "Dec 30", amount: "₱ 600.00", status: "Paid", invoice: "#TUV321987" },
-        { date: "Dec 15", amount: "₱ 425.00", status: "Refunded", invoice: "#GHI456789" },
-        { date: "Nov 28", amount: "₱ 375.00", status: "Paid", invoice: "#JKL789123" },    
-        // you can add more here for testing scrolling
-      ].map((item, index) => (
-        <View key={index} style={styles.historyCard}>
+      {historyData.map((item, index) => (
+        <TouchableOpacity
+          key={index}
+          style={styles.historyCard}
+          activeOpacity={0.8}
+          onPress={() =>
+            router.push({
+              pathname: "/(tabs)/payment/invoice",
+              params: { invoice: item.invoice, amount: item.amount, status: item.status, date: item.date },
+            })
+          }
+        >
           <View style={styles.historyRow}>
             <Text style={styles.historyDate}>{item.date}</Text>
             <Text style={styles.historyAmount}>{item.amount}</Text>
-
-            <Text 
-              style={[
-                styles.historyStatus,
-                item.status == "Cancelled" && {color: "red"},
-                item.status == "Refunded" && {color: "orange"},
-                item.status == "Paid" && {color: "green"},
-              ]}
-              >
+            <View style={[styles.statusBadge, getStatusStyle(item.status)]}>
+              <Text style={[styles.statusText, { color: getStatusStyle(item.status).color }]}>
                 {item.status}
-                </Text>
+              </Text>
+            </View>
           </View>
           <Text style={styles.historyInvoice}>{item.invoice}</Text>
-        </View>
+        </TouchableOpacity>
       ))}
     </ScrollView>
   );
@@ -99,80 +125,106 @@ export default function Payment() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f6f6f6',
+    backgroundColor: "#f6f6f6",
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 40, 
+    paddingBottom: 40,
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: "700",
     marginBottom: 10,
-     color: "#000",
+    color: "#000",
   },
   recentCard: {
     backgroundColor: "#fff",
-    borderRadius: 12,
+    borderRadius: 14,
     padding: 16,
     shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
     elevation: 3,
   },
   recentRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 6,
+    marginBottom: 8,
+    alignItems: "center",
   },
   date: { fontSize: 16, fontWeight: "500" },
-  amount: { fontSize: 16, fontWeight: "600" },
+  amount: { fontSize: 16, fontWeight: "700", color: "#004aad" },
   invoice: { fontSize: 14, color: "#555" },
-  paid: { fontSize: 14, color: "green", fontWeight: "500" },
-  
+
+  // Button
   button: {
-    backgroundColor: "#89CFF0",
-    borderRadius: 8,
-    paddingVertical: 8,
-    marginTop: 8,
+    backgroundColor: "#004aad",
+    borderRadius: 10,
+    paddingVertical: 10,
+    marginTop: 10,
     alignItems: "center",
-     borderWidth: 1.5,
-    borderColor: "#0D47A1",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 2,
   },
   buttonText: {
-    color: "#000",
+    color: "#fff",
     fontWeight: "600",
+    fontSize: 15,
   },
+
+  // History
   historyCard: {
     backgroundColor: "#fff",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 10,
-    borderWidth: 0.5,
-    borderColor: "#ccc",
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
   historyRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+   flexDirection: "row",
+  justifyContent: "space-between",
+  marginBottom: 8,
+  alignItems: "center",
+
   },
-  historyDate: { 
-    fontSize: 14, 
+  historyDate: {
+    fontSize: 14,
     fontWeight: "500",
-    flex: 1, 
+    flex: 1,
+    color: "#333",
   },
-  historyAmount: { 
-  fontSize: 14, 
-  fontWeight: "600", 
-  width: 90,      
+
+  historyAmount: {
+  fontSize: 14,
+  fontWeight: "700",
+  width: 140,       
   textAlign: "center",
+  color: "#004aad",
 },
-historyStatus: { 
-  fontSize: 14, 
-  fontWeight: "500", 
-  flex: 1, 
-  textAlign: "right", 
-},
-  historyInvoice: { fontSize: 12, color: "#555", marginTop: 2 },
+
+  historyInvoice: { 
+    fontSize: 12, 
+    color: "#777", 
+    marginTop: 2 
+  },
+
+  // Status badge
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: "flex-start",
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
 });

@@ -40,6 +40,8 @@ export default function LaundryDetails() {
   };
 
   const handleConfirm = () => {
+    if (!selectedFabric) return; // prevent accidental confirm
+
     router.push({
       pathname: "/(tabs)/homepage/df_payment",
       params: {
@@ -82,7 +84,10 @@ export default function LaundryDetails() {
         {fabricTypes.map((item, index) => (
           <Pressable
             key={index}
-            style={styles.optionRow}
+            style={[
+              styles.optionRow,
+              selectedFabric === item && styles.selectedOption, // ✅ highlight selected
+            ]}
             onPress={() => setSelectedFabric(item)}
           >
             <Ionicons
@@ -92,9 +97,16 @@ export default function LaundryDetails() {
                   : "radio-button-off-outline"
               }
               size={20}
-              color="#0D47A1"
+              color={selectedFabric === item ? "#004aad" : "#0D47A1"}
             />
-            <Text style={styles.optionText}>{item}</Text>
+            <Text
+              style={[
+                styles.optionText,
+                selectedFabric === item && { fontWeight: "700", color: "#004aad" },
+              ]}
+            >
+              {item}
+            </Text>
           </Pressable>
         ))}
 
@@ -103,17 +115,25 @@ export default function LaundryDetails() {
         {addonOptions.map((addon, index) => (
           <Pressable
             key={index}
-            style={styles.optionRow}
+            style={[
+              styles.optionRow,
+              addons.includes(addon) && styles.selectedOption, // ✅ highlight
+            ]}
             onPress={() => toggleAddon(addon)}
           >
             <Ionicons
-              name={
-                addons.includes(addon) ? "checkbox" : "square-outline"
-              }
+              name={addons.includes(addon) ? "checkbox" : "square-outline"}
               size={20}
-              color="#0D47A1"
+              color={addons.includes(addon) ? "#004aad" : "#0D47A1"}
             />
-            <Text style={styles.optionText}>{addon}</Text>
+            <Text
+              style={[
+                styles.optionText,
+                addons.includes(addon) && { fontWeight: "700", color: "#004aad" },
+              ]}
+            >
+              {addon}
+            </Text>
           </Pressable>
         ))}
 
@@ -130,7 +150,14 @@ export default function LaundryDetails() {
 
       {/* Footer */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.confirmBtn} onPress={handleConfirm}>
+        <TouchableOpacity
+          style={[
+            styles.confirmBtn,
+            !selectedFabric && { backgroundColor: "#ccc" }, // ✅ disabled if no fabric
+          ]}
+          onPress={handleConfirm}
+          disabled={!selectedFabric}
+        >
           <Text style={styles.confirmText}>Confirm Services</Text>
         </TouchableOpacity>
       </View>
@@ -161,7 +188,12 @@ const styles = StyleSheet.create({
   optionRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 5,
+    marginVertical: 6,
+    padding: 8,
+    borderRadius: 8,
+  },
+  selectedOption: {
+    backgroundColor: "#E3F2FD", // ✅ highlight
   },
   optionText: {
     marginLeft: 10,
@@ -175,6 +207,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginVertical: 10,
     textAlignVertical: "top",
+    minHeight: 60,
   },
   footer: {
     padding: 15,

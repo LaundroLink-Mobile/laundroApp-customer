@@ -7,7 +7,7 @@ import {
   StyleSheet, 
   Alert 
 } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 
 export default function Verify() {
   const [code, setCode] = useState("");
@@ -16,7 +16,6 @@ export default function Verify() {
 
   const handleSubmit = () => {
     if (code.length === 6) {
-      // After verification → go back to login
       router.replace({
         pathname: "/",
         params: { fullName, signupEmail: email, phone },
@@ -31,33 +30,45 @@ export default function Verify() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.logo}>LaundroLink</Text>
-      <Text style={styles.instructions}>
-        A verification code has been sent to your number. 
-        Enter the code below to continue.
-      </Text>
+    <>
+      {/* Hide header + back arrow */}
+      <Stack.Screen options={{ headerShown: false }} />
 
-      <TextInput
-        style={styles.input}
-        value={code}
-        onChangeText={setCode}
-        keyboardType="number-pad"
-        maxLength={6}
-        placeholder="------"
-        textAlign="center"
-      />
+      <View style={styles.container}>
+        <View style={styles.card}>
+          <Text style={styles.title}>Verify Your Account</Text>
+          <Text style={styles.subtitle}>
+            A verification code has been sent to your phone number. 
+            Please enter it below.
+          </Text>
 
-      <TouchableOpacity onPress={handleResend}>
-        <Text style={styles.resendText}>
-          Didn’t get any code? <Text style={styles.resendLink}>Resend code</Text>
-        </Text>
-      </TouchableOpacity>
+          {/* Code Input */}
+          <TextInput
+            style={styles.input}
+            value={code}
+            onChangeText={setCode}
+            keyboardType="number-pad"
+            maxLength={6}
+            placeholder="••••••"
+            placeholderTextColor="#aaa"
+            textAlign="center"
+          />
 
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Submit</Text>
-      </TouchableOpacity>
-    </View>
+          {/* Resend */}
+          <TouchableOpacity onPress={handleResend}>
+            <Text style={styles.resendText}>
+              Didn’t get any code?{" "}
+              <Text style={styles.resendLink}>Resend Code</Text>
+            </Text>
+          </TouchableOpacity>
+
+          {/* Submit */}
+          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+            <Text style={styles.buttonText}>Submit</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </>
   );
 }
 
@@ -69,47 +80,65 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 20,
   },
-  logo: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#1E3A8A",
-    marginBottom: 20,
+  card: {
+    backgroundColor: "#fff",
+    width: "100%",
+    borderRadius: 16,
+    padding: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 5,
+    alignItems: "center",
   },
-  instructions: {
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#003366",
+    marginBottom: 10,
     textAlign: "center",
+  },
+  subtitle: {
     fontSize: 14,
-    color: "#333",
+    color: "#555",
+    textAlign: "center",
     marginBottom: 20,
-    paddingHorizontal: 10,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#999",
-    borderRadius: 8,
+    borderColor: "#ddd",
+    borderRadius: 12,
     width: "70%",
-    fontSize: 20,
-    padding: 10,
-    marginBottom: 15,
-    backgroundColor: "#fff",
+    fontSize: 22,
+    letterSpacing: 8,
+    padding: 14,
+    marginBottom: 20,
+    backgroundColor: "#f9f9f9",
+    fontWeight: "600",
+    textAlign: "center",
   },
   resendText: {
     fontSize: 14,
-    marginBottom: 20,
     color: "#333",
+    marginBottom: 20,
   },
   resendLink: {
-    color: "#1E40AF",
+    color: "#004080",
     fontWeight: "bold",
   },
   button: {
-    backgroundColor: "#1E40AF",
-    paddingVertical: 12,
-    paddingHorizontal: 50,
-    borderRadius: 10,
+    backgroundColor: "#004080",
+    paddingVertical: 14,
+    paddingHorizontal: 60,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
   },
   buttonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: "bold",
   },
 });

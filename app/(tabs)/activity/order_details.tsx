@@ -1,9 +1,12 @@
 import React, { useLayoutEffect } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
 export default function OrderDetails() {
   const navigation = useNavigation();
+  const router = useRouter();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -33,69 +36,105 @@ export default function OrderDetails() {
   }, [navigation]);
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.card}>
-        {/* Customer Info */}
-        <View style={styles.section}>
-          <Text style={styles.customerName}>MJ Dimpas</Text>
-          <Text style={styles.customerPhone}>0917-123-4567</Text>
+    <View style={styles.container}>
+      <ScrollView>
+        <View style={styles.card}>
+          {/* Customer Info */}
+          <View style={styles.section}>
+            <View style={styles.row}>
+              <Ionicons name="person-circle-outline" size={28} color="#004aad" />
+              <View style={{ marginLeft: 10 }}>
+                <Text style={styles.customerName}>MJ Dimpas</Text>
+                <Text style={styles.customerPhone}>0917-123-4567</Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.divider} />
+
+          {/* Order Info */}
+          <View style={styles.section}>
+            <View style={styles.rowBetween}>
+              <View>
+                <Text style={styles.sectionTitle}>Order Information</Text>
+                <Text style={[styles.detailText, { fontWeight: "600" }]}>
+                  Order ID: <Text style={{ color: "#004aad" }}>#LAU123456</Text>
+                </Text>
+              </View>
+              <Text style={styles.detailText}>01 Sept 2025</Text>
+            </View>
+          </View>
+
+          <View style={styles.divider} />
+
+          {/* Service Details */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Service Details</Text>
+
+            <View style={styles.rowBetween}>
+              <MaterialIcons name="local-laundry-service" size={18} color="#666" />
+              <Text style={styles.label}>Service Type:</Text>
+              <Text style={styles.value}>Wash & Fold</Text>
+            </View>
+
+            <View style={styles.rowBetween}>
+              <Ionicons name="time-outline" size={18} color="#666" />
+              <Text style={styles.label}>Pickup:</Text>
+              <Text style={styles.value}>Sept 1, 2:00 PM</Text>
+            </View>
+
+            <View style={styles.rowBetween}>
+              <Ionicons name="calendar-outline" size={18} color="#666" />
+              <Text style={styles.label}>Delivery:</Text>
+              <Text style={styles.value}>Sept 2, 6:00 PM</Text>
+            </View>
+
+            <View style={styles.rowBetween}>
+              <FontAwesome5 name="money-bill-wave" size={16} color="#004aad" />
+              <Text style={styles.label}>Total Amount:</Text>
+              <Text style={[styles.value, { color: "#004aad", fontWeight: "700" }]}>
+                ₱ 370.00
+              </Text>
+            </View>
+
+            <View style={styles.rowBetween}>
+              <Ionicons name="card-outline" size={18} color="#666" />
+              <Text style={styles.label}>Payment Method:</Text>
+              <Text style={[styles.value, { fontWeight: "600" }]}>GCash</Text>
+            </View>
+          </View>
+
+          <View style={styles.divider} />
+
+          {/* Delivery Info */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Delivery Information</Text>
+            <View style={styles.rowBetween}>
+              <Ionicons name="cube-outline" size={18} color="#666" />
+              <Text style={styles.label}>Type:</Text>
+              <Text style={styles.value}>Pickup & Delivery</Text>
+            </View>
+            <View style={styles.rowBetween}>
+              <Ionicons name="location-outline" size={18} color="#666" />
+              <Text style={styles.label}>Address:</Text>
+              <Text style={[styles.value, { flex: 1, textAlign: "right" }]}>
+                123 Jasmine St., Cebu City
+              </Text>
+            </View>
+          </View>
         </View>
+      </ScrollView>
 
-        <View style={styles.divider} />
-
-        {/* Order Info */}
-        <View style={styles.rowBetween}>
-          <View>
-            <Text style={styles.sectionTitle}>Order Details</Text>
-            <Text style={styles.detailText}>Order ID: #LAU123456</Text>
-          </View>
-          <Text style={styles.detailText}>01 Sept 2025</Text>
-        </View>
-
-        <View style={styles.divider} />
-
-        {/* Service Details */}
-        <View>
-          <View style={styles.rowBetween}>
-            <Text style={styles.label}>Service Type:</Text>
-            <Text style={styles.value}>Wash & Fold</Text>
-          </View>
-          <View style={styles.rowBetween}>
-            <Text style={styles.label}>Pickup:</Text>
-            <Text style={styles.value}>Sept 1, 2:00 PM</Text>
-          </View>
-          <View style={styles.rowBetween}>
-            <Text style={styles.label}>Delivery:</Text>
-            <Text style={styles.value}>Sept 2, 6:00 PM</Text>
-          </View>
-          <View style={styles.rowBetween}>
-            <Text style={styles.label}>Total Amount:</Text>
-            <Text style={styles.value}>₱ 370.00</Text>
-          </View>
-          <View style={styles.rowBetween}>
-            <Text style={styles.label}>Payment Method:</Text>
-            <Text style={styles.value}>GCash</Text>
-          </View>
-        </View>
-
-        <View style={styles.divider} />
-
-        {/* Delivery Info */}
-        <View>
-          <Text style={styles.sectionTitle}>Delivery Information</Text>
-          <View style={styles.rowBetween}>
-            <Text style={styles.label}>Type:</Text>
-            <Text style={styles.value}>Pickup & Delivery</Text>
-          </View>
-          <View style={styles.rowBetween}>
-            <Text style={styles.label}>Address:</Text>
-            <Text style={[styles.value, { flex: 1, textAlign: "right" }]}>
-              123 Jasmine St., Cebu City
-            </Text>
-          </View>
-        </View>
+      {/* Done Button */}
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.dismissAll()} 
+        >
+          <Text style={styles.buttonText}>Done</Text>
+        </TouchableOpacity>
       </View>
-    </ScrollView>
+    </View>
   );
 }
 
@@ -110,16 +149,22 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 16,
     shadowColor: "#000",
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.08,
     shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
     elevation: 3,
   },
   section: {
     marginBottom: 12,
   },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   customerName: {
     fontSize: 18,
     fontWeight: "600",
+    color: "#000",
   },
   customerPhone: {
     fontSize: 14,
@@ -127,13 +172,14 @@ const styles = StyleSheet.create({
   },
   divider: {
     borderBottomWidth: 1,
-    borderColor: "#ddd",
-    marginVertical: 12,
+    borderColor: "#e0e0e0",
+    marginVertical: 14,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: "600",
-    marginBottom: 4,
+    marginBottom: 6,
+    color: "#004aad",
   },
   detailText: {
     fontSize: 14,
@@ -143,14 +189,39 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginVertical: 4,
+    marginVertical: 6,
+    gap: 6,
   },
   label: {
     fontSize: 14,
     color: "#666",
+    flex: 1,
   },
   value: {
     fontSize: 14,
     fontWeight: "500",
+    color: "#111",
+  },
+  footer: {
+    borderColor: "#e0e0e0",
+    backgroundColor: "#fff",
+  },
+
+  button: {
+    margin: 20,
+    backgroundColor: "#004aad",
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

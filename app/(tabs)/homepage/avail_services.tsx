@@ -54,16 +54,7 @@ export default function AvailableServices() {
             </TouchableOpacity>
           ),
           headerTitle: () => (
-            <Text
-              style={{
-                color: "#2d2d2dff",
-                fontSize: 20,
-                fontWeight: "600",
-                marginLeft: 20,
-              }}
-            >
-              Available Services
-            </Text>
+            <Text style={styles.headerTitle}>Available Services</Text>
           ),
         }}
       />
@@ -93,6 +84,7 @@ export default function AvailableServices() {
                     styles.serviceOptionSelected,
                 ]}
                 onPress={() => toggleService(service.id)}
+                activeOpacity={0.7}
               >
                 <Ionicons
                   name={
@@ -101,10 +93,17 @@ export default function AvailableServices() {
                       : "square-outline"
                   }
                   size={22}
-                  color="#000"
-                  style={{ marginRight: 10 }}
+                  color={selectedServices.includes(service.id) ? "#004aad" : "#444"}
+                  style={{ marginRight: 12 }}
                 />
-                <Text style={styles.serviceText}>{service.name}</Text>
+                <Text
+                  style={[
+                    styles.serviceText,
+                    selectedServices.includes(service.id) && styles.serviceTextSelected,
+                  ]}
+                >
+                  {service.name}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -114,7 +113,11 @@ export default function AvailableServices() {
       {/* Next Button */}
       <View style={styles.footer}>
         <TouchableOpacity
-          style={styles.nextButton}
+          style={[
+            styles.nextButton,
+            selectedServices.length === 0 && styles.nextButtonDisabled,
+          ]}
+          disabled={selectedServices.length === 0}
           onPress={() =>
             router.push({
               pathname: "/(tabs)/homepage/laundry_details",
@@ -122,7 +125,9 @@ export default function AvailableServices() {
             })
           }
         >
-          <Text style={styles.nextText}>Next</Text>
+          <Text style={styles.nextText}>
+            {selectedServices.length === 0 ? "Select a service" : "Next"}
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -137,53 +142,76 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     padding: 20,
-    paddingBottom: 100,
+    paddingBottom: 120,
   },
   wrapper: {
     flex: 1,
   },
+  headerTitle: {
+    color: "#2d2d2dff",
+    fontSize: 20,
+    fontWeight: "700",
+    marginLeft: 20,
+  },
   shopSection: {
     alignItems: "center",
     marginTop: 20,
+    marginBottom: 10,
   },
   shopImage: {
-    width: 120,
-    height: 120,
+    width: 130,
+    height: 130,
     resizeMode: "contain",
-    borderRadius: 10,
+    borderRadius: 15,
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
   shopName: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#000",
-    marginTop: 8,
+    marginTop: 10,
   },
   instruction: {
     textAlign: "center",
     marginVertical: 15,
-    fontSize: 14,
-    color: "#333",
+    fontSize: 15,
+    color: "#444",
+    fontWeight: "500",
   },
   servicesList: {
-    marginTop: 20,
+    marginTop: 10,
     width: "100%",
   },
   serviceOption: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#D8F1FF",
+    backgroundColor: "#fff",
     padding: 15,
     borderRadius: 12,
-    marginBottom: 15,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 2,
   },
   serviceOptionSelected: {
     borderColor: "#004aad",
-    borderWidth: 2,
+    backgroundColor: "#E6F0FF",
   },
   serviceText: {
     fontSize: 15,
-    color: "#000",
+    color: "#333",
     fontWeight: "500",
+  },
+  serviceTextSelected: {
+    color: "#004aad",
+    fontWeight: "600",
   },
   footer: {
     position: "absolute",
@@ -192,16 +220,26 @@ const styles = StyleSheet.create({
     right: 0,
     padding: 15,
     backgroundColor: "#f6f6f6",
+    borderTopWidth: 1,
+    borderColor: "#ddd",
   },
   nextButton: {
     backgroundColor: "#004aad",
     paddingVertical: 16,
     borderRadius: 25,
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  nextButtonDisabled: {
+    backgroundColor: "#aaa",
   },
   nextText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "700",
+    letterSpacing: 0.5,
   },
 });

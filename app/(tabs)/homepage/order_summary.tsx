@@ -19,7 +19,9 @@ export default function OrderSummaryScreen() {
   const parsedServices = services ? JSON.parse(services as string) : [];
   const parsedFabrics = fabrics ? JSON.parse(fabrics as string) : [];
   const parsedAddons = addons ? JSON.parse(addons as string) : [];
-  const parsedInstructions = instructions ? JSON.parse(instructions as string) : [];
+  const parsedInstructions = instructions
+    ? JSON.parse(instructions as string)
+    : [];
 
   // Generate a mock Order ID
   const orderId = "#LAU" + Math.floor(Math.random() * 900000 + 100000);
@@ -45,7 +47,7 @@ export default function OrderSummaryScreen() {
               <Ionicons
                 name="arrow-back"
                 size={24}
-                color="#000"
+                color="#000000ff"
                 style={{ marginLeft: 10 }}
               />
             </TouchableOpacity>
@@ -59,19 +61,19 @@ export default function OrderSummaryScreen() {
       {/* Scrollable content */}
       <ScrollView
         style={styles.container}
-        contentContainerStyle={{ paddingBottom: 120 }}
+        contentContainerStyle={{ paddingBottom: 140 }}
       >
         {/* Order Info */}
-        <View style={styles.card}>
+        <View style={[styles.card, styles.highlightCard]}>
           <View style={styles.rowBetween}>
-            <Text style={styles.orderId}>Order ID: {orderId}</Text>
+            <Text style={styles.orderId}>{orderId}</Text>
             <Text style={styles.date}>{formattedDate}</Text>
           </View>
         </View>
 
         {/* Selected Services */}
         <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Selected Services</Text>
+          <Text style={styles.sectionTitle}>🧺 Selected Services</Text>
           <View style={styles.listGroup}>
             {parsedServices.length > 0 ? (
               parsedServices.map((service: string, index: number) => (
@@ -80,14 +82,14 @@ export default function OrderSummaryScreen() {
                 </Text>
               ))
             ) : (
-              <Text style={styles.listItem}>• No services selected</Text>
+              <Text style={styles.emptyText}>• No services selected</Text>
             )}
           </View>
         </View>
 
         {/* Laundry Details */}
         <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Laundry Details</Text>
+          <Text style={styles.sectionTitle}>🧾 Laundry Details</Text>
 
           {/* Fabrics */}
           <Text style={styles.subTitle}>Fabric Type(s)</Text>
@@ -99,7 +101,7 @@ export default function OrderSummaryScreen() {
                 </Text>
               ))
             ) : (
-              <Text style={styles.listItem}>• None</Text>
+              <Text style={styles.emptyText}>• None</Text>
             )}
           </View>
 
@@ -113,7 +115,7 @@ export default function OrderSummaryScreen() {
                 </Text>
               ))
             ) : (
-              <Text style={styles.listItem}>• None</Text>
+              <Text style={styles.emptyText}>• None</Text>
             )}
           </View>
 
@@ -127,113 +129,132 @@ export default function OrderSummaryScreen() {
                 </Text>
               ))
             ) : (
-              <Text style={styles.listItem}>• None</Text>
+              <Text style={styles.emptyText}>• None</Text>
             )}
           </View>
         </View>
 
         {/* Delivery Option */}
         <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Delivery Option</Text>
+          <Text style={styles.sectionTitle}>🚛 Delivery Option</Text>
           <View style={styles.listGroup}>
-            <Text style={styles.listItem}>
+            <Text style={[styles.listItem, styles.deliveryOption]}>
               • {deliveryOption || "Not selected"}
             </Text>
           </View>
         </View>
       </ScrollView>
 
-     {/* Order Button */}
-<View style={styles.footer}>
-  <TouchableOpacity
-    style={styles.paymentButton}
-    onPress={() =>
-      router.push({
-        pathname: "/(tabs)/homepage/order_confirm",
-        params: {
-          services: JSON.stringify(parsedServices),
-          fabrics: JSON.stringify(parsedFabrics),
-          addons: JSON.stringify(parsedAddons),
-          instructions: JSON.stringify(parsedInstructions),
-          deliveryOption: deliveryOption || "Not selected",
-        },
-      })
-    }
-  >
-    <Text style={styles.paymentText}>Order</Text>
-  </TouchableOpacity>
-</View>
-
+      {/* Order Button */}
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={styles.paymentButton}
+          activeOpacity={0.9}
+          onPress={() =>
+            router.push({
+              pathname: "/(tabs)/homepage/order_confirm",
+              params: {
+                services: JSON.stringify(parsedServices),
+                fabrics: JSON.stringify(parsedFabrics),
+                addons: JSON.stringify(parsedAddons),
+                instructions: JSON.stringify(parsedInstructions),
+                deliveryOption: deliveryOption || "Not selected",
+              },
+            })
+          }
+        >
+          <Text style={styles.paymentText}>Confirm Order</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#fff" },
+  safeArea: { flex: 1, backgroundColor: "#f7f9fc" },
   container: { flex: 1, paddingHorizontal: 16, paddingTop: 30 },
   rowBetween: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 15,
+    marginBottom: 5,
   },
   card: {
-    backgroundColor: "#f9f9f9",
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 15,
+    backgroundColor: "#fff",
+    padding: 18,
+    borderRadius: 16,
+    marginBottom: 18,
+    borderWidth: 1,
+    borderColor: "#eee",
     shadowColor: "#000",
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
   },
-  orderId: { fontSize: 16, fontWeight: "600", color: "#004aad" },
-  date: { fontSize: 14, color: "#666" },
+  highlightCard: {
+    borderColor: "#004aad",
+    borderWidth: 1.5,
+    backgroundColor: "#eaf2ff",
+  },
+  orderId: { fontSize: 18, fontWeight: "700", color: "#004aad" },
+  date: { fontSize: 14, color: "#666", fontWeight: "500" },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: 17,
+    fontWeight: "700",
     marginBottom: 10,
-    color: "#000",
+    color: "#004aad",
   },
   subTitle: {
     fontSize: 15,
-    fontWeight: "500",
-    marginTop: 10,
+    fontWeight: "600",
+    marginTop: 12,
     marginBottom: 6,
-    color: "#004aad",
+    color: "#333",
   },
   listGroup: { marginLeft: 10 },
-  listItem: { fontSize: 14, marginBottom: 4, color: "#333" },
+  listItem: {
+    fontSize: 14,
+    marginBottom: 6,
+    color: "#444",
+    lineHeight: 20,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: "#999",
+    marginBottom: 6,
+    fontStyle: "italic",
+  },
+  deliveryOption: { fontWeight: "600", color: "#004aad" },
+
   headerTitle: {
-    color: "#2d2d2dff",
+    color: "#000000ff",
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: "700",
     marginLeft: 20,
   },
   footer: {
-  position: "absolute",
-  bottom: 0,
-  left: 0,
-  right: 0,
-  padding: 15,
-  backgroundColor: "#fff",
-},
-paymentButton: {
-  backgroundColor: "#004aad",
-  paddingVertical: 16,
-  borderRadius: 25,
-  alignItems: "center",
-},
-paymentText: {
-  color: "#fff",
-  fontSize: 16,
-  fontWeight: "bold",
-},
-
-  button: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 15,
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderColor: "#eee",
+  },
+  paymentButton: {
     backgroundColor: "#004aad",
     paddingVertical: 16,
-    borderRadius: 25,
+    borderRadius: 30,
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
   },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+  paymentText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+    letterSpacing: 0.5,
+  },
 });

@@ -41,11 +41,11 @@ export default function OrderConfirmationScreen() {
   // Different notes based on delivery option
   const deliveryNotes: Record<string, string> = {
     "Drop-off at Shop":
-      "You will bring your laundry directly to the shop. No pickup or delivery fees.",
+      "✅ You will bring your laundry directly to the shop. No pickup or delivery fees.",
     "Pickup Only":
-      "A rider will be booked by the shop to pick up your laundry. You’ll return to the shop to collect it.",
+      "🚚 A rider will be booked by the shop to pick up your laundry. You’ll return to the shop to collect it.",
     "Pickup & Delivery":
-      "A rider will be booked by the shop to pick up your laundry and deliver it back to your doorstep.\n\nDelivery fee will be confirmed and sent to you.",
+      "🚴 A rider will be booked by the shop to pick up your laundry and deliver it back to your doorstep.\n\n💵 Delivery fee will be confirmed and sent to you.",
   };
 
   return (
@@ -79,7 +79,7 @@ export default function OrderConfirmationScreen() {
         contentContainerStyle={{ paddingBottom: 120 }}
       >
         {/* Order Info */}
-        <View style={styles.card}>
+        <View style={[styles.card, styles.highlightCard]}>
           <View style={styles.rowBetween}>
             <Text style={styles.orderId}>Order ID: {orderId}</Text>
             <Text style={styles.date}>{formattedDate}</Text>
@@ -88,7 +88,7 @@ export default function OrderConfirmationScreen() {
 
         {/* Selected Services */}
         <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Selected Services</Text>
+          <Text style={styles.sectionTitle}>🧺 Selected Services</Text>
           {parsedServices.length > 0 ? (
             parsedServices.map((s: string, i: number) => (
               <Text key={i} style={styles.listItem}>
@@ -102,7 +102,7 @@ export default function OrderConfirmationScreen() {
 
         {/* Laundry Details */}
         <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Laundry Details</Text>
+          <Text style={styles.sectionTitle}>🧾 Laundry Details</Text>
 
           {/* Fabrics */}
           <Text style={styles.subTitle}>Fabric Type(s)</Text>
@@ -143,7 +143,7 @@ export default function OrderConfirmationScreen() {
 
         {/* Delivery Option */}
         <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Delivery Option</Text>
+          <Text style={styles.sectionTitle}>🚛 Delivery Option</Text>
           <Text style={styles.listItem}>
             • {deliveryOption || "Not selected"}
           </Text>
@@ -157,9 +157,9 @@ export default function OrderConfirmationScreen() {
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => router.push("/(tabs)/homepage/homepage")}
+          onPress={() => router.dismissAll()}
         >
-          <Text style={styles.buttonText}>Back to Home</Text>
+          <Text style={styles.buttonText}>Done</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -189,6 +189,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
+  },
+  highlightCard: {
+    borderWidth: 1.5,
+    borderColor: "#004aad",
+    backgroundColor: "#eef7ff",
   },
   orderId: { fontSize: 16, fontWeight: "600", color: "#004aad" },
   date: { fontSize: 14, color: "#666" },
@@ -220,6 +225,10 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 25,
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
   },
   buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
 });

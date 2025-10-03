@@ -5,87 +5,65 @@ import { useLayoutEffect, useState } from "react";
 import { Link } from "expo-router";
 
 const shops = [
-  { id: "1", 
-    name: "Wash n’ Dry - Lahug", 
-    distance: "1.7km", 
-    rating: "4.5", 
+  {
+    id: "1",
+    name: "Wash n’ Dry - Lahug",
+    distance: "1.7km",
+    rating: "4.5",
     image: require("@/assets/images/washndry.png"),
-    description: "Experience top-notch laundry facilities equipped with state-of-the-art machines and a clean, comfortable environment.",
-    addDescription: "We accept a wide variety of fabrics, including cotton, linen, polyester, denim, wool, and delicate materials like silk and lace. Whether it's everyday wear or specialty garments, your laundry is in good hands.",
+    description:
+      "Experience top-notch laundry facilities equipped with state-of-the-art machines and a clean, comfortable environment.",
+    addDescription:
+      "We accept a wide variety of fabrics, including cotton, linen, polyester, denim, wool, and delicate materials like silk and lace. Whether it's everyday wear or specialty garments, your laundry is in good hands.",
     address: "Wilson St., Lahug, Cebu City",
     contact: "09223324839",
     hours: "8am-6pm",
     availability: "Available",
-    prices: { 
-      washFold: [ 
-        "Regular Clothes: ₱25 - ₱60 per kg", 
-        "Blankets, Bed Sheets, Towels: ₱50 - ₱110 per kg", 
-        "Comforters (per piece): ₱200 - ₱125 per kg or more", ], 
-      washPress: ["Regular Clothes: ₱80 - ₱150 per kg"], 
-      pressOnly: ["Regular Clothes: ₱80 - ₱150 per kg"], 
-      washDry: ["₱130 - ₱190 per load"], 
-      fullService: ["₱80 - ₱150 per kg"], }
   },
-  { id: "2", 
-    name: "Sparklean - Apas", 
-    distance: "1km", rating: "4.0", 
+  {
+    id: "2",
+    name: "Sparklean - Apas",
+    distance: "1km",
+    rating: "4.0",
     image: require("@/assets/images/sparklean.jpg"),
-    description: "Offering comprehensive laundry services with a focus on quality and customer satisfaction.",
-    addDescription: "From wash and fold to dry cleaning, we handle all types of laundry with care. Our eco-friendly detergents ensure your clothes are not only clean but also safe for the environment.",
+    description:
+      "Offering comprehensive laundry services with a focus on quality and customer satisfaction.",
+    addDescription:
+      "From wash and fold to dry cleaning, we handle all types of laundry with care. Our eco-friendly detergents ensure your clothes are not only clean but also safe for the environment.",
     address: "Apas, Cebu City",
     contact: "09171234567",
     hours: "9am-7pm",
     availability: "Available",
-    prices: { 
-      washFold: [ 
-        "Regular Clothes: ₱25 - ₱60 per kg", 
-        "Blankets, Bed Sheets, Towels: ₱50 - ₱110 per kg", 
-        "Comforters (per piece): ₱200 - ₱125 per kg or more", ], 
-      washPress: ["Regular Clothes: ₱80 - ₱150 per kg"], 
-      pressOnly: ["Regular Clothes: ₱80 - ₱150 per kg"], 
-      washDry: ["₱130 - ₱190 per load"], 
-      fullService: ["₱80 - ₱150 per kg"], }
   },
-  { id: "3", 
-    name: "Laundry Cleaning - Cebu", 
-    distance: "1.1km", rating: "4.5", 
+  {
+    id: "3",
+    name: "Laundry Cleaning - Cebu",
+    distance: "1.1km",
+    rating: "4.5",
     image: require("@/assets/images/laundry.avif"),
-    description: "Your go-to laundry service for fast, reliable, and affordable cleaning solutions.",
-    addDescription: "We specialize in handling all types of garments, ensuring they are cleaned to perfection. Our friendly staff and efficient service make laundry day a breeze.",
+    description:
+      "Your go-to laundry service for fast, reliable, and affordable cleaning solutions.",
+    addDescription:
+      "We specialize in handling all types of garments, ensuring they are cleaned to perfection. Our friendly staff and efficient service make laundry day a breeze.",
     address: "Cebu City",
     contact: "09339876543",
     hours: "8am-8pm",
     availability: "Available",
-    prices: { 
-      washFold: [ 
-        "Regular Clothes: ₱25 - ₱60 per kg", 
-        "Blankets, Bed Sheets, Towels: ₱50 - ₱110 per kg", 
-        "Comforters (per piece): ₱200 - ₱125 per kg or more", ], 
-      washPress: ["Regular Clothes: ₱80 - ₱150 per kg"], 
-      pressOnly: ["Regular Clothes: ₱80 - ₱150 per kg"], 
-      washDry: ["₱130 - ₱190 per load"], 
-      fullService: ["₱80 - ₱150 per kg"], }
   },
-  { id: "4", 
-    name: "Wash n’ Wait - Lahug", 
-    distance: "1.7km", 
-    rating: "4.5", 
+  {
+    id: "4",
+    name: "Wash n’ Wait - Lahug",
+    distance: "1.7km",
+    rating: "4.5",
     image: require("@/assets/images/washnwait.jpg"),
-    description: "Convenient and quick laundry services designed to fit your busy lifestyle.",
-    addDescription: "With our state-of-the-art machines and experienced staff, we guarantee your clothes will be fresh, clean, and ready to wear in no time.",
+    description:
+      "Convenient and quick laundry services designed to fit your busy lifestyle.",
+    addDescription:
+      "With our state-of-the-art machines and experienced staff, we guarantee your clothes will be fresh, clean, and ready to wear in no time.",
     address: "Wilson St., Lahug, Cebu City",
     contact: "09451237890",
     hours: "7am-5pm",
     availability: "Available",
-    prices: { 
-      washFold: [ 
-        "Regular Clothes: ₱25 - ₱60 per kg", 
-        "Blankets, Bed Sheets, Towels: ₱50 - ₱110 per kg", 
-        "Comforters (per piece): ₱200 - ₱125 per kg or more", ], 
-      washPress: ["Regular Clothes: ₱80 - ₱150 per kg"], 
-      pressOnly: ["Regular Clothes: ₱80 - ₱150 per kg"], 
-      washDry: ["₱130 - ₱190 per load"], 
-      fullService: ["₱80 - ₱150 per kg"], }
   },
 ];
 
@@ -101,26 +79,38 @@ export default function SearchLaundryScreen() {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
-      headerStyle: { backgroundColor: "#47cbe2ff" },
-      headerTintColor: "#fff",
+      headerStyle: { backgroundColor: "#89CFF0" },
+      headerTintColor: "#000000ff",
       headerShadowVisible: false,
       headerTitle: () => (
         <Pressable
           style={{ flexDirection: "row", alignItems: "center" }}
           onPress={() => setModalVisible(true)}
         >
-          <Ionicons name="location-outline" size={18} color="#2d2d2dff" />
-          <Text style={{ color: "#2d2d2dff", marginLeft: 6, fontSize: 16, fontWeight: "600" }}>
+          <Ionicons name="location-outline" size={18} color="#000000ff" />
+          <Text
+            style={{
+              color: "#2d2d2dff",
+              marginLeft: 6,
+              fontSize: 16,
+              fontWeight: "600",
+            }}
+          >
             {currentLocation}
           </Text>
-          <Ionicons name="chevron-down" size={16} color="#2d2d2dff" style={{ marginLeft: 4 }} />
+          <Ionicons
+            name="chevron-down"
+            size={16}
+            color="#2d2d2dff"
+            style={{ marginLeft: 4 }}
+          />
         </Pressable>
       ),
     });
   }, [navigation, currentLocation]);
 
   // 🔎 Filter shops based on query
-  const filteredShops = shops.filter(shop =>
+  const filteredShops = shops.filter((shop) =>
     shop.name.toLowerCase().includes(query.toLowerCase())
   );
 
@@ -133,7 +123,10 @@ export default function SearchLaundryScreen() {
         animationType="fade"
         onRequestClose={() => setModalVisible(false)}
       >
-        <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setModalVisible(false)}
+        >
           <View style={styles.modalContainer}>
             {locations.map((loc, homepage) => (
               <TouchableOpacity
@@ -161,7 +154,7 @@ export default function SearchLaundryScreen() {
             placeholderTextColor="#888"
             value={query}
             onChangeText={setQuery}
-            autoFocus={true} 
+            autoFocus={true}
           />
         </View>
 
@@ -171,7 +164,11 @@ export default function SearchLaundryScreen() {
             <Text style={styles.sectionTitle}>You may want to search</Text>
             <View style={styles.suggestionContainer}>
               {suggestions.map((s, homepage) => (
-                <Pressable key={homepage} style={styles.suggestionChip} onPress={() => setQuery(s)}>
+                <Pressable
+                  key={homepage}
+                  style={styles.suggestionChip}
+                  onPress={() => setQuery(s)}
+                >
                   <Text style={styles.suggestionText}>{s}</Text>
                 </Pressable>
               ))}
@@ -181,7 +178,7 @@ export default function SearchLaundryScreen() {
 
         {/* Recommended / Filtered shops */}
         <Text style={[styles.sectionTitle, { marginTop: 20 }]}>
-        {query === "" ? "Recommended" : "Search Results"}
+          {query === "" ? "Recommended" : "Search Results"}
         </Text>
         <FlatList
           data={filteredShops}
@@ -189,22 +186,22 @@ export default function SearchLaundryScreen() {
           scrollEnabled={false}
           contentContainerStyle={styles.shopList}
           renderItem={({ item }) => (
-            <Link 
+            <Link
               href={{
                 pathname: "./about_laundry",
-                params: { 
-                  id: item.id, 
-                  name: item.name, 
-                  distance: item.distance, 
-                  rating: item.rating, 
-                  image: item.image, 
+                params: {
+                  id: item.id,
+                  name: item.name,
+                  distance: item.distance,
+                  rating: item.rating,
+                  image: item.image,
                   description: item.description,
                   addDescription: item.addDescription,
                   address: item.address,
                   contact: item.contact,
                   hours: item.hours,
                   availability: item.availability,
-                  prices: JSON.stringify(item.prices),   // ✅ make sure this is included
+                  prices: JSON.stringify(item.prices), 
                 },
               }}
               asChild
@@ -221,7 +218,7 @@ export default function SearchLaundryScreen() {
             </Link>
           )}
           ListEmptyComponent={() => (
-            <Text style={{ textAlign: "center", marginTop: 20, color: "#555" }}>
+            <Text style={{ textAlign: "center", marginTop: 20, color: "#777", fontSize: 15 }}>
               No shops found.
             </Text>
           )}
@@ -232,41 +229,85 @@ export default function SearchLaundryScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: '#f3f3f3ff', 
-    paddingTop: 20, 
-    paddingHorizontal: 16 
+  container: {
+    flex: 1,
+    backgroundColor: "#f7f9fc",
+    paddingTop: 20,
+    paddingHorizontal: 16,
   },
   searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    width: '100%',
-    paddingVertical: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    width: "100%",
+    paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 25,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.08,
     shadowRadius: 2,
     elevation: 2,
     marginBottom: 20,
   },
   icon: { marginRight: 8 },
-  input: { flex: 1, fontSize: 16, color: '#000' },
-  sectionTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 12 },
-  suggestionContainer: { flexDirection: "row", flexWrap: "wrap", marginBottom: 10 },
-  suggestionChip: { backgroundColor: "#e0e0e0", paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20, marginRight: 10, marginBottom: 10 },
-  suggestionText: { fontSize: 14, color: "#333" },
+  input: { flex: 1, fontSize: 16, color: "#222" },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 12,
+    color: "#333",
+  },
+  suggestionContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginBottom: 10,
+  },
+  suggestionChip: {
+    backgroundColor: "#eaf6ff",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    marginRight: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#cce9ff",
+  },
+  suggestionText: { fontSize: 14, color: "#2a6ebd", fontWeight: "500" },
   shopList: { paddingBottom: 20 },
-  shopRow: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", marginVertical: 6, padding: 10, borderRadius: 12, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2, elevation: 2 },
+  shopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    marginVertical: 6,
+    padding: 12,
+    borderRadius: 14,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    elevation: 2,
+  },
   shopRowImage: { width: 70, height: 70, borderRadius: 10, marginRight: 12 },
   shopRowDetails: { flex: 1 },
-  shopRowName: { fontSize: 16, fontWeight: "600", marginBottom: 4 },
-  shopRowInfo: { fontSize: 13, color: "#555" },
-  modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.3)", justifyContent: "center", alignItems: "center" },
-  modalContainer: { backgroundColor: "#fff", borderRadius: 10, padding: 10, width: 250 },
+  shopRowName: { fontSize: 16, fontWeight: "600", marginBottom: 3, color: "#222" },
+  shopRowInfo: { fontSize: 13, color: "#666" },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.35)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 12,
+    width: 260,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 6,
+  },
   modalItem: { paddingVertical: 12, paddingHorizontal: 10 },
   modalText: { fontSize: 16, color: "#333" },
 });

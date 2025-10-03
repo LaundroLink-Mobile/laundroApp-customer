@@ -1,7 +1,4 @@
-import * as ImagePicker from "expo-image-picker";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Alert,
   Image,
@@ -14,71 +11,101 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 
 const EditProfileScreen: React.FC = () => {
   const router = useRouter();
 
-  // Get data from login/index
+  // 🟢 Get params from login/index
   const { fullName, phone: passedPhone, email: passedEmail } = useLocalSearchParams();
 
+  /** -----------------------------
+   *   STATES
+   * ----------------------------- */
   const [addresses, setAddresses] = useState<string[]>([""]);
   const [payments, setPayments] = useState<any[]>([]);
   const [profilePic, setProfilePic] = useState<string | null>(null);
+
   const [phone, setPhone] = useState(passedPhone ? String(passedPhone) : "");
   const [email, setEmail] = useState(passedEmail ? String(passedEmail) : "");
 
-  // Modal states
+  // 🟢 Modal states
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentType, setPaymentType] = useState<"GCash" | "Cash" | null>(null);
 
-  // Payment form states
+  // 🟢 Payment form states
   const [gcashNumber, setGcashNumber] = useState("");
   const [gcashName, setGcashName] = useState("");
 
-  const addAddress = () => {
-    setAddresses([...addresses, ""]);
-  };
+  /** -----------------------------
+   *   HANDLERS
+   * ----------------------------- */
+  const addAddress = useCallback(() => {
+    setAddresses((prev) => [...prev, ""]);
+  }, []);
 
-  const removeAddress = (index: number) => {
-    const updated = addresses.filter((_, i) => i !== index);
-    setAddresses(updated);
-  };
+  const removeAddress = useCallback((index: number) => {
+    setAddresses((prev) => prev.filter((_, i) => i !== index));
+  }, []);
 
-  const addPayment = () => {
+  const addPayment = useCallback(() => {
     setShowPaymentModal(true);
     setPaymentType(null);
-  };
+  }, []);
 
-  const savePayment = () => {
+  const savePayment = useCallback(() => {
     if (paymentType === "GCash") {
-      if (!gcashName || !gcashNumber) {
-        Alert.alert("Please enter GCash info");
+      if (!gcashName.trim() || !gcashNumber.trim()) {
+        Alert.alert("Missing Info", "Please enter GCash Name and Number");
         return;
       }
-      setPayments([...payments, { type: "GCash", name: gcashName, number: gcashNumber }]);
+
+      // Prevent duplicates
+      if (payments.some((p) => p.number === gcashNumber.trim())) {
+        Alert.alert("Duplicate Entry", "This GCash number already exists.");
+        return;
+      }
+
+      setPayments((prev) => [
+        ...prev,
+        { type: "GCash", name: gcashName.trim(), number: gcashNumber.trim() },
+      ]);
+
       setGcashName("");
       setGcashNumber("");
     } else if (paymentType === "Cash") {
-      setPayments([...payments, { type: "Cash", name: "Cash Payment", number: "" }]);
+      if (payments.some((p) => p.type === "Cash")) {
+        Alert.alert("Already Added", "Cash payment is already listed.");
+        return;
+      }
+      setPayments((prev) => [...prev, { type: "Cash", name: "Cash Payment", number: "" }]);
     }
 
     setShowPaymentModal(false);
     setPaymentType(null);
-  };
+  }, [gcashName, gcashNumber, paymentType, payments]);
 
-  const removePayment = (index: number) => {
-    const updated = payments.filter((_, i) => i !== index);
-    setPayments(updated);
-  };
+  const removePayment = useCallback((index: number) => {
+    setPayments((prev) => prev.filter((_, i) => i !== index));
+  }, []);
 
-  const saveProfile = () => {
+  const saveProfile = useCallback(() => {
+    if (!phone.trim() || !email.trim()) {
+      Alert.alert("Missing Info", "Phone and Email cannot be empty.");
+      return;
+    }
+
     console.log({ phone, email, addresses, payments, profilePic });
-    Alert.alert("Profile saved!");
+    Alert.alert("Profile saved successfully!");
     router.replace("/homepage/homepage");
-  };
+  }, [phone, email, addresses, payments, profilePic, router]);
 
-  const changeProfilePic = () => {
+  const changeProfilePic = useCallback(() => {
     Alert.alert("Change Profile Picture", "Choose an option", [
       {
         text: "Camera",
@@ -123,177 +150,199 @@ const EditProfileScreen: React.FC = () => {
       },
       { text: "Cancel", style: "cancel" },
     ]);
-  };
+  }, []);
 
+  /** -----------------------------
+   *   RENDER
+   * ----------------------------- */
   return (
-    <SafeAreaView style={styles.safe}>
-      <StatusBar barStyle="dark-content" />
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* Avatar */}
-        <View style={styles.avatarWrap}>
-          {profilePic ? (
-            <Image source={{ uri: profilePic }} style={styles.avatarImg} />
-          ) : (
-            <View style={styles.avatar}>
-              <Text style={styles.avatarInitials}>
-                {fullName ? String(fullName).charAt(0) : "C"}
-              </Text>
-            </View>
-          )}
+    <>
+      {/* 🟢 Hide default Expo Router header */}
+      <Stack.Screen options={{ headerShown: false }} />
 
-          {/* Pen icon overlay */}
-          <TouchableOpacity style={styles.editIconWrap} onPress={changeProfilePic}>
-            <MaterialIcons name="edit" size={22} color={COLORS.white} />
-          </TouchableOpacity>
-        </View>
-
-        {/* Full Name (display only) */}
-        <Text style={styles.name}>{fullName ? String(fullName) : "Customer Name"}</Text>
-
-        {/* Phone (editable) */}
-        <TextInput
-          style={styles.input}
-          value={phone}
-          onChangeText={setPhone}
-          placeholder="Edit phone number"
-          placeholderTextColor={COLORS.placeholder}
-          keyboardType="phone-pad"
-        />
-
-        {/* Email (editable) */}
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          placeholder="Edit email address"
-          placeholderTextColor={COLORS.placeholder}
-          keyboardType="email-address"
-        />
-
-        {/* Address */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Address</Text>
-            <TouchableOpacity onPress={addAddress}>
-              <Text style={styles.addBtn}>Add</Text>
-            </TouchableOpacity>
-          </View>
-
-          {addresses.map((addr, index) => (
-            <View key={index} style={styles.addressRow}>
-              <TextInput
-                style={[styles.input, { flex: 1 }]}
-                value={addresses[index]}
-                onChangeText={(text) => {
-                  const updated = [...addresses];
-                  updated[index] = text;
-                  setAddresses(updated);
-                }}
-                placeholder="Edit Address"
-                placeholderTextColor={COLORS.placeholder}
-              />
-              {addresses.length > 1 && (
-                <TouchableOpacity
-                  style={styles.removeBtn}
-                  onPress={() => removeAddress(index)}
-                >
-                  <Text style={styles.removeText}>✕</Text>
-                </TouchableOpacity>
+      <SafeAreaView style={styles.safe}>
+        <StatusBar barStyle="dark-content" />
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          style={{ flex: 1 }}
+        >
+          <ScrollView
+            contentContainerStyle={styles.content}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* 🟢 Avatar */}
+            <View style={styles.avatarWrap}>
+              {profilePic ? (
+                <Image source={{ uri: profilePic }} style={styles.avatarImg} />
+              ) : (
+                <View style={styles.avatar}>
+                  <Text style={styles.avatarInitials}>
+                    {fullName ? String(fullName).charAt(0).toUpperCase() : "C"}
+                  </Text>
+                </View>
               )}
-            </View>
-          ))}
-        </View>
 
-        {/* Payment */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Payment Method</Text>
-            <TouchableOpacity onPress={addPayment}>
-              <Text style={styles.addBtn}>Add</Text>
-            </TouchableOpacity>
-          </View>
-
-          {payments.map((p, index) => (
-            <View key={index} style={styles.addressRow}>
-              <Text style={{ flex: 1 }}>
-                {p.type === "GCash"
-                  ? `GCash - ${p.name} (${p.number})`
-                  : `Cash - ${p.name} (${p.number})`}
-              </Text>
-              <TouchableOpacity
-                style={styles.removeBtn}
-                onPress={() => removePayment(index)}
-              >
-                <Text style={styles.removeText}>✕</Text>
+              {/* Pen icon overlay */}
+              <TouchableOpacity style={styles.editIconWrap} onPress={changeProfilePic}>
+                <MaterialIcons name="edit" size={22} color={COLORS.white} />
               </TouchableOpacity>
             </View>
-          ))}
-        </View>
 
-        {/* Save Button */}
-        <TouchableOpacity style={styles.saveBtn} onPress={saveProfile}>
-          <Text style={styles.saveBtnText}>Save</Text>
-        </TouchableOpacity>
-      </ScrollView>
+            {/* 🟢 Full Name */}
+            <Text style={styles.name}>
+              {fullName ? String(fullName) : "Customer Name"}
+            </Text>
 
-      {/* Modal */}
-      <Modal visible={showPaymentModal} animationType="slide" transparent>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            {!paymentType ? (
-              <>
-                <Text style={styles.modalTitle}>Choose Payment Method</Text>
-                <TouchableOpacity
-                  style={styles.modalBtn}
-                  onPress={() => setPaymentType("GCash")}
-                >
-                  <Text style={styles.modalBtnText}>GCash</Text>
+            {/* 🟢 Phone */}
+            <TextInput
+              style={styles.input}
+              value={phone}
+              onChangeText={setPhone}
+              placeholder="Edit phone number"
+              placeholderTextColor={COLORS.placeholder}
+              keyboardType="phone-pad"
+            />
+
+            {/* 🟢 Email */}
+            <TextInput
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Edit email address"
+              placeholderTextColor={COLORS.placeholder}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+
+            {/* 🟢 Address Section */}
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Address</Text>
+                <TouchableOpacity onPress={addAddress}>
+                  <Text style={styles.addBtn}>+ Add</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.modalBtn}
-                  onPress={() => setPaymentType("Cash")}
-                >
-                  <Text style={styles.modalBtnText}>Cash</Text>
+              </View>
+
+              {addresses.map((addr, index) => (
+                <View key={index} style={styles.addressRow}>
+                  <TextInput
+                    style={[styles.input, { flex: 1 }]}
+                    value={addr}
+                    onChangeText={(text) => {
+                      const updated = [...addresses];
+                      updated[index] = text;
+                      setAddresses(updated);
+                    }}
+                    placeholder="Edit Address"
+                    placeholderTextColor={COLORS.placeholder}
+                  />
+                  {addresses.length > 1 && (
+                    <TouchableOpacity
+                      style={styles.removeBtn}
+                      onPress={() => removeAddress(index)}
+                    >
+                      <Text style={styles.removeText}>✕</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              ))}
+            </View>
+
+            {/* 🟢 Payment Section */}
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Payment Method</Text>
+                <TouchableOpacity onPress={addPayment}>
+                  <Text style={styles.addBtn}>+ Add</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.modalBtn, { backgroundColor: "#ccc" }]}
-                  onPress={() => setShowPaymentModal(false)}
-                >
-                  <Text style={styles.modalBtnText}>Cancel</Text>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <>
-                <Text style={styles.modalTitle}>{paymentType} Information</Text>
-                {paymentType === "GCash" ? (
-                  <>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="GCash Name"
-                      value={gcashName}
-                      onChangeText={setGcashName}
-                    />
-                    <TextInput
-                      style={styles.input}
-                      placeholder="GCash Number"
-                      value={gcashNumber}
-                      onChangeText={setGcashNumber}
-                      keyboardType="phone-pad"
-                    />
-                  </>
-                ) : null}
-                <TouchableOpacity style={styles.modalBtn} onPress={savePayment}>
-                  <Text style={styles.modalBtnText}>Save</Text>
-                </TouchableOpacity>
-              </>
-            )}
+              </View>
+
+              {payments.map((p, index) => (
+                <View key={index} style={styles.addressRow}>
+                  <Text style={{ flex: 1 }}>
+                    {p.type === "GCash"
+                      ? `GCash - ${p.name} (${p.number})`
+                      : `Cash - ${p.name}`}
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.removeBtn}
+                    onPress={() => removePayment(index)}
+                  >
+                    <Text style={styles.removeText}>✕</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+
+            {/* 🟢 Save Button */}
+            <TouchableOpacity style={styles.saveBtn} onPress={saveProfile}>
+              <Text style={styles.saveBtnText}>Save</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </KeyboardAvoidingView>
+
+        {/* 🟢 Payment Modal */}
+        <Modal visible={showPaymentModal} animationType="fade" transparent>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              {!paymentType ? (
+                <>
+                  <Text style={styles.modalTitle}>Choose Payment Method</Text>
+                  <TouchableOpacity
+                    style={styles.modalBtn}
+                    onPress={() => setPaymentType("GCash")}
+                  >
+                    <Text style={styles.modalBtnText}>GCash</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.modalBtn}
+                    onPress={() => setPaymentType("Cash")}
+                  >
+                    <Text style={styles.modalBtnText}>Cash</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.modalBtn, { backgroundColor: "#ccc" }]}
+                    onPress={() => setShowPaymentModal(false)}
+                  >
+                    <Text style={styles.modalBtnText}>Cancel</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.modalTitle}>{paymentType} Information</Text>
+                  {paymentType === "GCash" && (
+                    <>
+                      <TextInput
+                        style={styles.input}
+                        placeholder="GCash Name"
+                        value={gcashName}
+                        onChangeText={setGcashName}
+                      />
+                      <TextInput
+                        style={styles.input}
+                        placeholder="GCash Number"
+                        value={gcashNumber}
+                        onChangeText={setGcashNumber}
+                        keyboardType="phone-pad"
+                      />
+                    </>
+                  )}
+                  <TouchableOpacity style={styles.modalBtn} onPress={savePayment}>
+                    <Text style={styles.modalBtnText}>Save</Text>
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
           </View>
-        </View>
-      </Modal>
-    </SafeAreaView>
+        </Modal>
+      </SafeAreaView>
+    </>
   );
 };
 
+/** -----------------------------
+ *   CONSTANTS & STYLES
+ * ----------------------------- */
 const COLORS = {
   sky: "#89CFF0",
   white: "#FFFFFF",
@@ -307,72 +356,101 @@ const COLORS = {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.sky },
-  content: { padding: 20, paddingBottom: 32 },
-  avatarWrap: { alignItems: "center", marginVertical: 12 },
+  content: { padding: 20, paddingBottom: 50 },
+  avatarWrap: { alignItems: "center", marginVertical: 12, position: "relative" },
+
   avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 110,
+    height: 110,
+    borderRadius: 55,
     backgroundColor: "#5B8FB9",
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 6,
   },
-  avatarImg: { width: 100, height: 100, borderRadius: 50 },
-  avatarInitials: { fontSize: 32, fontWeight: "800", color: COLORS.white },
+  avatarImg: { width: 110, height: 110, borderRadius: 55 },
+  avatarInitials: { fontSize: 36, fontWeight: "800", color: COLORS.white },
+
   editIconWrap: {
     position: "absolute",
     bottom: 0,
-    right: 120,
+    right: "35%",
     backgroundColor: COLORS.primary,
-    borderRadius: 16,
-    padding: 6,
+    borderRadius: 18,
+    padding: 8,
+    elevation: 6,
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
+
   name: {
-    fontSize: 20,
-    fontWeight: "600",
+    fontSize: 22,
+    fontWeight: "700",
     textAlign: "center",
-    marginBottom: 16,
+    marginBottom: 18,
+    color: COLORS.textDark,
   },
+
   input: {
     backgroundColor: COLORS.white,
-    borderRadius: 6,
-    padding: 12,
+    borderRadius: 8,
+    padding: 14,
     fontSize: 16,
     marginVertical: 6,
     borderWidth: 1,
     borderColor: COLORS.borderGray,
     color: COLORS.textDark,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 2,
   },
+
   section: {
-    marginTop: 18,
+    marginTop: 20,
     borderTopWidth: 1,
     borderTopColor: COLORS.borderGray,
-    paddingTop: 8,
+    paddingTop: 10,
   },
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 6,
+    marginBottom: 8,
   },
   sectionTitle: { fontSize: 18, fontWeight: "700" },
   addBtn: { fontSize: 16, color: COLORS.primary, fontWeight: "600" },
-  addressRow: { flexDirection: "row", alignItems: "center", marginVertical: 4 },
+
+  addressRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 4,
+  },
   removeBtn: {
     marginLeft: 10,
     backgroundColor: COLORS.lightGray,
-    borderRadius: 4,
+    borderRadius: 6,
     padding: 6,
   },
   removeText: { color: COLORS.iconGray, fontWeight: "700", fontSize: 14 },
+
   saveBtn: {
-    marginTop: 28,
+    marginTop: 32,
     backgroundColor: COLORS.primary,
-    paddingVertical: 14,
-    borderRadius: 8,
+    paddingVertical: 16,
+    borderRadius: 10,
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 4,
   },
   saveBtnText: { color: COLORS.white, fontSize: 18, fontWeight: "700" },
+
   modalOverlay: {
     flex: 1,
     justifyContent: "center",
@@ -382,16 +460,26 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: COLORS.white,
-    borderRadius: 12,
-    padding: 20,
+    borderRadius: 14,
+    padding: 24,
     width: "100%",
+    maxWidth: 400,
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 6,
   },
-  modalTitle: { fontSize: 20, fontWeight: "700", marginBottom: 12, textAlign: "center" },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    marginBottom: 14,
+    textAlign: "center",
+  },
   modalBtn: {
     backgroundColor: COLORS.primary,
-    padding: 12,
-    borderRadius: 8,
-    marginVertical: 6,
+    padding: 14,
+    borderRadius: 10,
+    marginVertical: 8,
     alignItems: "center",
   },
   modalBtnText: { color: COLORS.white, fontSize: 16, fontWeight: "600" },
