@@ -15,18 +15,15 @@ import {
   Platform,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { MaterialIcons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 
 const EditProfileScreen: React.FC = () => {
   const router = useRouter();
 
-  // 🟢 Get params from login/index
-  const { fullName, phone: passedPhone, email: passedEmail } = useLocalSearchParams();
+  const { fullName, phone: passedPhone, email: passedEmail } =
+    useLocalSearchParams();
 
-  /** -----------------------------
-   *   STATES
-   * ----------------------------- */
+  // States
   const [addresses, setAddresses] = useState<string[]>([""]);
   const [payments, setPayments] = useState<any[]>([]);
   const [profilePic, setProfilePic] = useState<string | null>(null);
@@ -34,17 +31,13 @@ const EditProfileScreen: React.FC = () => {
   const [phone, setPhone] = useState(passedPhone ? String(passedPhone) : "");
   const [email, setEmail] = useState(passedEmail ? String(passedEmail) : "");
 
-  // 🟢 Modal states
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentType, setPaymentType] = useState<"GCash" | "Cash" | null>(null);
 
-  // 🟢 Payment form states
   const [gcashNumber, setGcashNumber] = useState("");
   const [gcashName, setGcashName] = useState("");
 
-  /** -----------------------------
-   *   HANDLERS
-   * ----------------------------- */
+  // Handlers
   const addAddress = useCallback(() => {
     setAddresses((prev) => [...prev, ""]);
   }, []);
@@ -65,7 +58,6 @@ const EditProfileScreen: React.FC = () => {
         return;
       }
 
-      // Prevent duplicates
       if (payments.some((p) => p.number === gcashNumber.trim())) {
         Alert.alert("Duplicate Entry", "This GCash number already exists.");
         return;
@@ -83,7 +75,10 @@ const EditProfileScreen: React.FC = () => {
         Alert.alert("Already Added", "Cash payment is already listed.");
         return;
       }
-      setPayments((prev) => [...prev, { type: "Cash", name: "Cash Payment", number: "" }]);
+      setPayments((prev) => [
+        ...prev,
+        { type: "Cash", name: "Cash Payment", number: "" },
+      ]);
     }
 
     setShowPaymentModal(false);
@@ -110,7 +105,8 @@ const EditProfileScreen: React.FC = () => {
       {
         text: "Camera",
         onPress: async () => {
-          const { status } = await ImagePicker.requestCameraPermissionsAsync();
+          const { status } =
+            await ImagePicker.requestCameraPermissionsAsync();
           if (status !== "granted") {
             alert("Camera permission denied!");
             return;
@@ -130,7 +126,8 @@ const EditProfileScreen: React.FC = () => {
       {
         text: "Gallery",
         onPress: async () => {
-          const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+          const { status } =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
           if (status !== "granted") {
             alert("Gallery permission denied!");
             return;
@@ -152,12 +149,9 @@ const EditProfileScreen: React.FC = () => {
     ]);
   }, []);
 
-  /** -----------------------------
-   *   RENDER
-   * ----------------------------- */
+  // Render
   return (
     <>
-      {/* 🟢 Hide default Expo Router header */}
       <Stack.Screen options={{ headerShown: false }} />
 
       <SafeAreaView style={styles.safe}>
@@ -170,118 +164,128 @@ const EditProfileScreen: React.FC = () => {
             contentContainerStyle={styles.content}
             keyboardShouldPersistTaps="handled"
           >
-            {/* 🟢 Avatar */}
-            <View style={styles.avatarWrap}>
-              {profilePic ? (
-                <Image source={{ uri: profilePic }} style={styles.avatarImg} />
-              ) : (
-                <View style={styles.avatar}>
-                  <Text style={styles.avatarInitials}>
-                    {fullName ? String(fullName).charAt(0).toUpperCase() : "C"}
-                  </Text>
-                </View>
-              )}
-
-              {/* Pen icon overlay */}
-              <TouchableOpacity style={styles.editIconWrap} onPress={changeProfilePic}>
-                <MaterialIcons name="edit" size={22} color={COLORS.white} />
+            {/* Top Profile Card */}
+            <View style={styles.profileCard}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.fullName}>
+                  {fullName ? String(fullName) : "Customer Name"}
+                </Text>
+              </View>
+              <TouchableOpacity onPress={changeProfilePic}>
+                {profilePic ? (
+                  <Image source={{ uri: profilePic }} style={styles.avatarImg} />
+                ) : (
+                  <View style={styles.avatarPlaceholder} />
+                )}
               </TouchableOpacity>
             </View>
 
-            {/* 🟢 Full Name */}
-            <Text style={styles.name}>
-              {fullName ? String(fullName) : "Customer Name"}
-            </Text>
+            {/* Contact Info (Phone + Email in one card) */}
+<View style={styles.inputCard}>
+  {/* Phone */}
+  <Text style={styles.label}>Phone #</Text>
+  <TextInput
+    style={styles.textInput}
+    value={phone}
+    onChangeText={setPhone}
+    placeholder="+639XXXXXXXXX"
+    keyboardType="phone-pad"
+  />
 
-            {/* 🟢 Phone */}
-            <TextInput
-              style={styles.input}
-              value={phone}
-              onChangeText={setPhone}
-              placeholder="Edit phone number"
-              placeholderTextColor={COLORS.placeholder}
-              keyboardType="phone-pad"
-            />
+  {/* Divider Line */}
+  <View style={styles.divider} />
 
-            {/* 🟢 Email */}
-            <TextInput
-              style={styles.input}
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Edit email address"
-              placeholderTextColor={COLORS.placeholder}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
+  {/* Email */}
+  <Text style={styles.label}>Email Address</Text>
+  <TextInput
+    style={styles.textInput}
+    value={email}
+    onChangeText={setEmail}
+    placeholder="example@mail.com"
+    keyboardType="email-address"
+    autoCapitalize="none"
+  />
+</View>
 
-            {/* 🟢 Address Section */}
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>Address</Text>
-                <TouchableOpacity onPress={addAddress}>
-                  <Text style={styles.addBtn}>+ Add</Text>
-                </TouchableOpacity>
-              </View>
 
-              {addresses.map((addr, index) => (
-                <View key={index} style={styles.addressRow}>
-                  <TextInput
-                    style={[styles.input, { flex: 1 }]}
-                    value={addr}
-                    onChangeText={(text) => {
-                      const updated = [...addresses];
-                      updated[index] = text;
-                      setAddresses(updated);
-                    }}
-                    placeholder="Edit Address"
-                    placeholderTextColor={COLORS.placeholder}
-                  />
-                  {addresses.length > 1 && (
-                    <TouchableOpacity
-                      style={styles.removeBtn}
-                      onPress={() => removeAddress(index)}
-                    >
-                      <Text style={styles.removeText}>✕</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              ))}
-            </View>
+            {/* Places */}
+<Text style={styles.sectionTitle}>Places</Text>
+<View style={styles.card}>
+  {addresses.map((addr, index) => (
+    <View key={index} style={styles.row}>
+      {/* Gray box with icon */}
+      <View style={styles.iconPlaceholder}>
+        <Text style={styles.iconText}>🏠</Text>
+      </View>
 
-            {/* 🟢 Payment Section */}
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>Payment Method</Text>
-                <TouchableOpacity onPress={addPayment}>
-                  <Text style={styles.addBtn}>+ Add</Text>
-                </TouchableOpacity>
-              </View>
+      <TextInput
+        style={styles.rowText}
+        value={addr}
+        onChangeText={(text) => {
+          const updated = [...addresses];
+          updated[index] = text;
+          setAddresses(updated);
+        }}
+        placeholder="Enter Address"
+      />
 
-              {payments.map((p, index) => (
-                <View key={index} style={styles.addressRow}>
-                  <Text style={{ flex: 1 }}>
-                    {p.type === "GCash"
-                      ? `GCash - ${p.name} (${p.number})`
-                      : `Cash - ${p.name}`}
-                  </Text>
-                  <TouchableOpacity
-                    style={styles.removeBtn}
-                    onPress={() => removePayment(index)}
-                  >
-                    <Text style={styles.removeText}>✕</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
+      {addresses.length > 1 && (
+        <TouchableOpacity onPress={() => removeAddress(index)}>
+          <Text style={styles.removeText}>✕</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  ))}
 
-            {/* 🟢 Save Button */}
+  {/* Add Places */}
+  <TouchableOpacity style={styles.row} onPress={addAddress}>
+    <View style={styles.iconPlaceholder}>
+      <Text style={styles.iconText}>➕</Text>
+    </View>
+    <Text style={styles.addText}>Add Places</Text>
+  </TouchableOpacity>
+</View>
+
+{/* Payment */}
+<Text style={styles.sectionTitle}>Payment Method</Text>
+<View style={styles.card}>
+  {payments.map((p, index) => (
+    <View key={index} style={styles.row}>
+      {/* Gray box with dynamic icon */}
+      <View style={styles.iconPlaceholder}>
+        <Text style={styles.iconText}>{p.type === "GCash" ? "📱" : "💵"}</Text>
+      </View>
+
+      <Text style={styles.rowText}>
+        {p.type === "GCash"
+          ? `GCash - ${p.name} (${p.number})`
+          : `Cash - ${p.name}`}
+      </Text>
+
+      <TouchableOpacity onPress={() => removePayment(index)}>
+        <Text style={styles.removeText}>✕</Text>
+      </TouchableOpacity>
+    </View>
+  ))}
+
+  {/* Add Payment */}
+  <TouchableOpacity style={styles.row} onPress={addPayment}>
+    <View style={styles.iconPlaceholder}>
+      <Text style={styles.iconText}>➕</Text>
+    </View>
+    <Text style={styles.addText}>Add Payment Method</Text>
+  </TouchableOpacity>
+</View>
+
+
+            {/* Save Button */}
             <TouchableOpacity style={styles.saveBtn} onPress={saveProfile}>
               <Text style={styles.saveBtnText}>Save</Text>
             </TouchableOpacity>
           </ScrollView>
         </KeyboardAvoidingView>
 
-        {/* 🟢 Payment Modal */}
+        {/* Payment Modal */}
         <Modal visible={showPaymentModal} animationType="fade" transparent>
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
@@ -309,24 +313,35 @@ const EditProfileScreen: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <Text style={styles.modalTitle}>{paymentType} Information</Text>
-                  {paymentType === "GCash" && (
-                    <>
-                      <TextInput
-                        style={styles.input}
-                        placeholder="GCash Name"
-                        value={gcashName}
-                        onChangeText={setGcashName}
-                      />
-                      <TextInput
-                        style={styles.input}
-                        placeholder="GCash Number"
-                        value={gcashNumber}
-                        onChangeText={setGcashNumber}
-                        keyboardType="phone-pad"
-                      />
-                    </>
-                  )}
+                 <Text style={styles.modalTitle}>
+  {paymentType} Information
+</Text>
+
+{paymentType === "GCash" && (
+  <View style={styles.modalForm}>
+    <View style={styles.modalInputWrapper}>
+      <Text style={styles.modalLabel}>GCash Name</Text>
+      <TextInput
+        style={styles.modalInput}
+        placeholder="Enter GCash Name"
+        value={gcashName}
+        onChangeText={setGcashName}
+      />
+    </View>
+
+    <View style={styles.modalInputWrapper}>
+      <Text style={styles.modalLabel}>GCash Number</Text>
+      <TextInput
+        style={styles.modalInput}
+        placeholder="09XXXXXXXXX"
+        value={gcashNumber}
+        onChangeText={setGcashNumber}
+        keyboardType="phone-pad"
+      />
+    </View>
+  </View>
+)}
+
                   <TouchableOpacity style={styles.modalBtn} onPress={savePayment}>
                     <Text style={styles.modalBtnText}>Save</Text>
                   </TouchableOpacity>
@@ -340,116 +355,104 @@ const EditProfileScreen: React.FC = () => {
   );
 };
 
-/** -----------------------------
- *   CONSTANTS & STYLES
- * ----------------------------- */
+/* 🎨 Styles */
 const COLORS = {
   sky: "#89CFF0",
   white: "#FFFFFF",
   primary: "#174EA6",
-  placeholder: "#A0A0A0",
-  textDark: "#000000",
-  borderGray: "#ccc",
-  lightGray: "#E0E0E0",
-  iconGray: "#666666",
+  gray: "#E0E0E0",
+  textDark: "#000",
 };
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.sky },
   content: { padding: 20, paddingBottom: 50 },
-  avatarWrap: { alignItems: "center", marginVertical: 12, position: "relative" },
 
-  avatar: {
-    width: 110,
-    height: 110,
-    borderRadius: 55,
-    backgroundColor: "#5B8FB9",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 6,
-  },
-  avatarImg: { width: 110, height: 110, borderRadius: 55 },
-  avatarInitials: { fontSize: 36, fontWeight: "800", color: COLORS.white },
-
-  editIconWrap: {
-    position: "absolute",
-    bottom: 0,
-    right: "35%",
-    backgroundColor: COLORS.primary,
-    borderRadius: 18,
-    padding: 8,
-    elevation: 6,
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
-
-  name: {
-    fontSize: 22,
-    fontWeight: "700",
-    textAlign: "center",
-    marginBottom: 18,
-    color: COLORS.textDark,
-  },
-
-  input: {
+  profileCard: {
+    flexDirection: "row",
     backgroundColor: COLORS.white,
-    borderRadius: 8,
-    padding: 14,
+    borderRadius: 10,
+    padding: 16,
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  fullName: { fontSize: 20, fontWeight: "700", color: COLORS.textDark },
+  avatarImg: { width: 60, height: 60, borderRadius: 30 },
+  avatarPlaceholder: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: COLORS.gray,
+  },
+
+iconPlaceholder: {
+  width: 32,
+  height: 32,
+  backgroundColor: "#F2F2F2",
+  borderRadius: 8,
+  justifyContent: "center",
+  alignItems: "center",
+  marginRight: 12,
+  shadowColor: "#000",
+  shadowOpacity: 0.05,
+  shadowRadius: 3,
+  elevation: 2,
+  borderWidth: 1,
+  borderColor: "#E0E0E0",
+},
+
+iconText: {
+  fontSize: 16, // smaller so it fits nicely
+  color: "#555",
+  fontWeight: "600",
+  textAlign: "center", // ensures alignment inside
+  includeFontPadding: false, // removes extra spacing on Android
+  textAlignVertical: "center", // ensures vertical alignment on Android
+},
+
+  inputCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 12,
+  },
+  label: { fontSize: 14, marginBottom: 4, color: COLORS.textDark },
+  textInput: {
     fontSize: 16,
-    marginVertical: 6,
-    borderWidth: 1,
-    borderColor: COLORS.borderGray,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.gray,
+    paddingVertical: 4,
     color: COLORS.textDark,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
   },
 
-  section: {
-    marginTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.borderGray,
-    paddingTop: 10,
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  sectionTitle: { fontSize: 18, fontWeight: "700" },
-  addBtn: { fontSize: 16, color: COLORS.primary, fontWeight: "600" },
+  sectionTitle: { fontSize: 16, fontWeight: "600", marginTop: 20, marginBottom: 6 },
 
-  addressRow: {
+  card: {
+    backgroundColor: COLORS.white,
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 12,
+  },
+  row: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 4,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.gray,
   },
-  removeBtn: {
-    marginLeft: 10,
-    backgroundColor: COLORS.lightGray,
-    borderRadius: 6,
-    padding: 6,
-  },
-  removeText: { color: COLORS.iconGray, fontWeight: "700", fontSize: 14 },
+  rowText: { flex: 1, fontSize: 15, marginLeft: 8, color: COLORS.textDark },
+ 
+  addText: { marginLeft: 8, color: COLORS.primary, fontSize: 15 },
+  removeText: { color: "red", fontWeight: "700", marginLeft: 6 },
 
   saveBtn: {
-    marginTop: 32,
     backgroundColor: COLORS.primary,
-    paddingVertical: 16,
-    borderRadius: 10,
+    paddingVertical: 14,
+    borderRadius: 6,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.15,
-    shadowRadius: 5,
-    elevation: 4,
+    marginTop: 20,
   },
-  saveBtnText: { color: COLORS.white, fontSize: 18, fontWeight: "700" },
+  saveBtnText: { color: COLORS.white, fontSize: 16, fontWeight: "600" },
 
   modalOverlay: {
     flex: 1,
@@ -461,28 +464,60 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: COLORS.white,
     borderRadius: 14,
-    padding: 24,
+    padding: 20,
     width: "100%",
     maxWidth: 400,
-    shadowColor: "#000",
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 6,
   },
   modalTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    marginBottom: 14,
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 12,
     textAlign: "center",
   },
   modalBtn: {
     backgroundColor: COLORS.primary,
-    padding: 14,
-    borderRadius: 10,
-    marginVertical: 8,
+    padding: 12,
+    borderRadius: 8,
+    marginVertical: 6,
     alignItems: "center",
   },
-  modalBtnText: { color: COLORS.white, fontSize: 16, fontWeight: "600" },
+  modalBtnText: { color: COLORS.white, fontSize: 15, fontWeight: "600" },
+
+  modalForm: {
+  marginTop: 10,
+},
+
+modalInputWrapper: {
+  marginBottom: 14,
+},
+
+modalLabel: {
+  fontSize: 14,
+  fontWeight: "500",
+  color: "#333",
+  marginBottom: 6,
+},
+
+modalInput: {
+  borderWidth: 1,
+  borderColor: "#E0E0E0",
+  borderRadius: 8,
+  paddingHorizontal: 12,
+  paddingVertical: 10,
+  fontSize: 15,
+  backgroundColor: "#F9F9F9",
+  color: "#000",
+},
+
+
+  divider: {
+  backgroundColor: "#E5E5E5", 
+  opacity: 0.8,              
+  marginVertical: 10,        
+  borderRadius: 1,          
+},
+
+
 });
 
 export default EditProfileScreen;

@@ -74,7 +74,7 @@ export default function Payment() {
         </View>
         <View style={styles.recentRow}>
           <Text style={styles.invoice}>#LAU123456</Text>
-          <View style={[styles.statusBadge, getStatusStyle("Paid")]}>
+          <View style={[styles.statusBadge, { backgroundColor: getStatusStyle("Paid").backgroundColor }]}>
             <Text style={[styles.statusText, { color: getStatusStyle("Paid").color }]}>Paid</Text>
           </View>
         </View>
@@ -108,11 +108,21 @@ export default function Payment() {
         >
           <View style={styles.historyRow}>
             <Text style={styles.historyDate}>{item.date}</Text>
-            <Text style={styles.historyAmount}>{item.amount}</Text>
-            <View style={[styles.statusBadge, getStatusStyle(item.status)]}>
-              <Text style={[styles.statusText, { color: getStatusStyle(item.status).color }]}>
-                {item.status}
-              </Text>
+
+            {/* Right side grouped */}
+            <View style={styles.rightContainer}>
+              <Text style={styles.historyAmount}>{item.amount}</Text>
+              <View style={[
+                styles.statusBadge,
+                { backgroundColor: getStatusStyle(item.status).backgroundColor }
+              ]}>
+                <Text style={[
+                  styles.statusText,
+                  { color: getStatusStyle(item.status).color }
+                ]}>
+                  {item.status}
+                </Text>
+              </View>
             </View>
           </View>
           <Text style={styles.historyInvoice}>{item.invoice}</Text>
@@ -188,43 +198,56 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
-  historyRow: {
-   flexDirection: "row",
-  justifyContent: "space-between",
-  marginBottom: 8,
-  alignItems: "center",
 
+  historyRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8, 
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0", 
   },
+
   historyDate: {
-    fontSize: 14,
-    fontWeight: "500",
-    flex: 1,
-    color: "#333",
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#222",
+    flex: 1, 
+  },
+
+  rightContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    minWidth: 140,
   },
 
   historyAmount: {
-  fontSize: 14,
-  fontWeight: "700",
-  width: 140,       
-  textAlign: "center",
-  color: "#004aad",
-},
+    fontSize: 15,
+    fontWeight: "700",
+    textAlign: "right",
+    color: "#174EA6",
+    letterSpacing: 0.3,
+    marginRight: 8,
+  },
 
-  historyInvoice: { 
-    fontSize: 12, 
-    color: "#777", 
-    marginTop: 2 
+  historyInvoice: {
+    fontSize: 13,
+    color: "#777",
+    marginTop: 2,
+    fontStyle: "italic",   
   },
 
   // Status badge
   statusBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    alignSelf: "flex-start",
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+    alignSelf: "center",
   },
+
   statusText: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: 11,
+    fontWeight: "500",
+    color: "#333",
   },
 });
