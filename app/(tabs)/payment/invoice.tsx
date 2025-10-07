@@ -32,89 +32,207 @@ export default function Invoice() {
   const handleDownload = async () => {
     try {
       const html = `
-        <html>
-          <head>
-            <style>
-              body { font-family: Arial; padding: 20px; background-color: #f4f6f8; }
-              h2 { text-align: center; color: #004aad; }
-              .section { background-color: #fff; padding: 15px; margin-bottom: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-              h3 { color: #333; margin-bottom: 8px; }
-              p { margin: 3px 0; }
-              .table { width: 100%; border-collapse: collapse; }
-              .table th, .table td { border: 1px solid #eee; padding: 8px; word-wrap: break-word; }
-              .table th { background-color: #f1f1f1; text-align: center; }
-              .table td.item { text-align: left; min-width: 120px; }
-              .table td.qty, .table td.price, .table td.total { text-align: center; min-width: 60px; }
-              .discount { color: red; font-weight: bold; }
-              .summary-row { display: flex; justify-content: space-between; margin: 5px 0; }
-              .summary-row .label { font-weight: bold; }
-              .footer { text-align: center; font-style: italic; margin-top: 20px; color: #555; }
-            </style>
-          </head>
-          <body>
-            <div class="section">
-              <h2>LaundroLink Invoice</h2>
+  <html>
+    <head>
+      <style>
+        body {
+          font-family: 'Segoe UI', Arial, sans-serif;
+          padding: 30px;
+          background-color: #f2f7fb;
+          color: #333;
+        }
+        .invoice-container {
+          max-width: 750px;
+          margin: auto;
+          background: #fff;
+          border-radius: 12px;
+          box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+          overflow: hidden;
+        }
+        .header {
+          background: linear-gradient(90deg, #004aad, #5EC1EF);
+          color: white;
+          text-align: center;
+          padding: 25px 20px;
+        }
+        .header h2 {
+          margin: 0;
+          font-size: 28px;
+          letter-spacing: 0.5px;
+        }
+        .section {
+          padding: 20px 30px;
+          border-bottom: 1px solid #eee;
+        }
+        .section:last-child {
+          border-bottom: none;
+        }
+        h3 {
+          color: #004aad;
+          margin-bottom: 12px;
+          border-left: 4px solid #004aad;
+          padding-left: 8px;
+        }
+        p {
+          margin: 4px 0;
+          line-height: 1.5;
+        }
+        .info {
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
+        }
+        .info div {
+          width: 48%;
+        }
+        .table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 10px;
+        }
+        .table th {
+          background-color: #e9f3ff;
+          text-align: center;
+          padding: 10px;
+          font-size: 14px;
+          color: #004aad;
+        }
+        .table td {
+          text-align: center;
+          padding: 10px;
+          border-bottom: 1px solid #f0f0f0;
+          font-size: 14px;
+        }
+        .table td.item {
+          text-align: left;
+          font-weight: 500;
+        }
+        .table tr:last-child td {
+          border-bottom: none;
+        }
+        .summary {
+          background-color: #f9fbff;
+          padding: 15px 20px;
+          border-radius: 8px;
+          margin-top: 15px;
+        }
+        .summary-row {
+          display: flex;
+          justify-content: space-between;
+          margin: 6px 0;
+          font-size: 15px;
+        }
+        .summary-row .label {
+          font-weight: 600;
+          color: #444;
+        }
+        .summary-row .value {
+          font-weight: 700;
+          color: #004aad;
+        }
+        .discount {
+          color: #e63946;
+          font-weight: bold;
+        }
+        .footer {
+          text-align: center;
+          padding: 20px;
+          font-size: 13px;
+          color: #555;
+          background-color: #f8faff;
+          border-top: 1px solid #eaeaea;
+        }
+        .footer span {
+          color: #004aad;
+          font-weight: 600;
+        }
+      </style>
+    </head>
+
+    <body>
+      <div class="invoice-container">
+        <div class="header">
+          <h2>LaundroLink Invoice</h2>
+          <p>Professional Laundry & Delivery Service</p>
+        </div>
+
+        <div class="section">
+          <div class="info">
+            <div>
               <p><b>Invoice #:</b> ${invoice || "INV-2025-0911-001"}</p>
               <p><b>Invoice Date:</b> ${date || "25 Sept 2025"}</p>
             </div>
-
-            <div class="section">
-              <h3>Customer Details</h3>
-              <p>👤 MJ Dimapas</p>
-              <p>📞 +63 123 456 789</p>
-              <p>🏠 123 St., Cebu City</p>
+            <div style="text-align: right;">
+              <p><b>Status:</b> ${status || "Paid"}</p>
+              <p><b>Payment Method:</b> GCash</p>
             </div>
+          </div>
+        </div>
 
-            <div class="section">
-              <h3>Order Breakdown</h3>
-              <table class="table">
-                <tr>
-                  <th>Item</th><th>Qty</th><th>Price</th><th>Total</th>
-                </tr>
-                <tr>
-                  <td class="item">Laundry (Wash & Fold)</td>
-                  <td class="qty">5 kg</td>
-                  <td class="price">₱50/kg</td>
-                  <td class="total">₱250</td>
-                </tr>
-                <tr>
-                  <td class="item">Service Fee</td>
-                  <td class="qty">-</td>
-                  <td class="price">-</td>
-                  <td class="total">₱50</td>
-                </tr>
-                <tr>
-                  <td class="item">Delivery Fee</td>
-                  <td class="qty">-</td>
-                  <td class="price">-</td>
-                  <td class="total">₱70</td>
-                </tr>
-                <tr>
-                  <td class="item discount">Discount Promo</td>
-                  <td class="qty">-</td>
-                  <td class="price">-</td>
-                  <td class="total discount">-₱20</td>
-                </tr>
-              </table>
+        <div class="section">
+          <h3>Customer Details</h3>
+          <p>👤 <b>MJ Dimapas</b></p>
+          <p>📞 +63 123 456 789</p>
+          <p>🏠 123 St., Cebu City</p>
+        </div>
+
+        <div class="section">
+          <h3>Order Breakdown</h3>
+          <table class="table">
+            <tr>
+              <th>Item</th><th>Qty</th><th>Price</th><th>Total</th>
+            </tr>
+            <tr>
+              <td class="item">Laundry (Wash & Fold)</td>
+              <td>5 kg</td>
+              <td>₱50/kg</td>
+              <td>₱250</td>
+            </tr>
+            <tr>
+              <td class="item">Service Fee</td>
+              <td>-</td>
+              <td>-</td>
+              <td>₱50</td>
+            </tr>
+            <tr>
+              <td class="item">Delivery Fee</td>
+              <td>-</td>
+              <td>-</td>
+              <td>₱70</td>
+            </tr>
+            <tr>
+              <td class="item discount">Discount Promo</td>
+              <td>-</td>
+              <td>-</td>
+              <td class="discount">-₱20</td>
+            </tr>
+          </table>
+
+          <div class="summary">
+            <div class="summary-row">
+              <span class="label">Subtotal:</span>
+              <span class="value">₱370</span>
             </div>
-
-            <div class="section">
-              <h3>Summary</h3>
-              <div class="summary-row"><span class="label">Subtotal:</span> <span>₱370</span></div>
-              <div class="summary-row"><span class="label">Discount:</span> <span class="discount">-₱20</span></div>
-              <div class="summary-row"><span class="label">Total:</span> <span><b>${amount || "₱350"}</b></span></div>
+            <div class="summary-row">
+              <span class="label">Discount:</span>
+              <span class="value discount">-₱20</span>
             </div>
-
-            <div class="section">
-              <h3>Payment</h3>
-              <p>💳 Method: GCash</p>
-              <p>Status: <b>${status || "Paid"}</b> (${date || "9 Sept 2025"})</p>
+            <div class="summary-row">
+              <span class="label">Total:</span>
+              <span class="value">${amount || "₱350"}</span>
             </div>
+          </div>
+        </div>
 
-            <p class="footer">💙 Thank you for trusting LaundroLink! 💙</p>
-          </body>
-        </html>
-      `;
+        <div class="footer">
+          💙 Thank you for trusting <span>LaundroLink</span>! <br/>
+          For assistance, contact (123) 456-7890 or visit our app.
+        </div>
+      </div>
+    </body>
+  </html>
+`;
+
 
       const { uri } = await Print.printToFileAsync({ html });
       if (await Sharing.isAvailableAsync()) {
