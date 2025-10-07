@@ -10,11 +10,12 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 
-// Profile type
 interface Profile {
   avatar: string | null;
   name: string;
@@ -24,7 +25,6 @@ interface Profile {
   paymentMethod: string;
 }
 
-// Default profile data
 const defaultProfile: Profile = {
   avatar: null,
   name: "MJ Dimpas",
@@ -39,7 +39,7 @@ export default function ProfileScreen() {
   const [profile, setProfile] = useState<Profile>(defaultProfile);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  // Update profile fields
+  // Update field logic remains the same
   const updateField = (
     field: keyof Profile,
     value: string,
@@ -67,26 +67,55 @@ export default function ProfileScreen() {
     setIsEditing((prev) => !prev);
   };
 
+  // 📸 Pick Image Function
+  const pickImage = async () => {
+    if (!isEditing) return; // only allow when editing
+
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("Permission needed", "Please allow photo library access.");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setProfile({ ...profile, avatar: result.assets[0].uri });
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safe}>
       <Stack.Screen
         options={{
           headerShown: true,
-          headerStyle: { backgroundColor: "#89CFF0" },
+          headerStyle: { backgroundColor: "#6EC1E4" },
           headerShadowVisible: false,
-          headerTintColor: "#2d2d2dff",
+          headerTintColor: "#fff",
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()}>
               <Ionicons
                 name="arrow-back"
                 size={24}
-                color="#000"
+                color="#fff"
                 style={{ marginLeft: 10 }}
               />
             </TouchableOpacity>
           ),
           headerTitle: () => (
-            <Text style={{ color: "#2d2d2dff", fontSize: 20, fontWeight: "600", marginLeft: 20 }}>
+            <Text
+              style={{
+                color: "#fff",
+                fontSize: 20,
+                fontWeight: "700",
+                marginLeft: 20,
+              }}
+            >
               Profile
             </Text>
           ),
@@ -99,7 +128,7 @@ export default function ProfileScreen() {
         <ScrollView contentContainerStyle={styles.container}>
           {/* Profile Header */}
           <View style={styles.header}>
-            <TouchableOpacity style={styles.avatarWrap}>
+            <TouchableOpacity style={styles.avatarWrap} onPress={pickImage}>
               {profile.avatar ? (
                 <Image source={{ uri: profile.avatar }} style={styles.avatar} />
               ) : (
@@ -111,6 +140,11 @@ export default function ProfileScreen() {
                       .join("")
                       .toUpperCase()}
                   </Text>
+                </View>
+              )}
+              {isEditing && (
+                <View style={styles.cameraOverlay}>
+                  <Ionicons name="camera" size={22} color="#fff" />
                 </View>
               )}
             </TouchableOpacity>
@@ -125,6 +159,8 @@ export default function ProfileScreen() {
               onChangeText={(t) => updateField("phone", t)}
               editable={isEditing}
               keyboardType="phone-pad"
+              placeholder="Phone number"
+              placeholderTextColor="#aaa"
             />
 
             <TextInput
@@ -134,20 +170,31 @@ export default function ProfileScreen() {
               editable={isEditing}
               keyboardType="email-address"
               autoCapitalize="none"
+              placeholder="Email address"
+              placeholderTextColor="#aaa"
             />
 
             <Text style={styles.sectionTitle}>Saved Addresses</Text>
             {profile.addresses.map((addr, i) => (
               <View key={i} style={styles.addrRow}>
                 <TextInput
-                  style={[styles.input, styles.addressInput, !isEditing && styles.readonly]}
+                  style={[
+                    styles.input,
+                    styles.addressInput,
+                    !isEditing && styles.readonly,
+                  ]}
                   value={addr}
                   onChangeText={(t) => updateField("addresses", t, i)}
                   editable={isEditing}
                   multiline
+                  placeholder="Enter address"
+                  placeholderTextColor="#aaa"
                 />
                 {isEditing && (
-                  <TouchableOpacity style={styles.removeBtn} onPress={() => removeAddress(i)}>
+                  <TouchableOpacity
+                    style={styles.removeBtn}
+                    onPress={() => removeAddress(i)}
+                  >
                     <Text style={styles.removeText}>Remove</Text>
                   </TouchableOpacity>
                 )}
@@ -166,6 +213,8 @@ export default function ProfileScreen() {
               value={profile.paymentMethod}
               onChangeText={(t) => updateField("paymentMethod", t)}
               editable={isEditing}
+              placeholder="Payment Method"
+              placeholderTextColor="#aaa"
             />
           </View>
         </ScrollView>
@@ -176,7 +225,9 @@ export default function ProfileScreen() {
             style={[styles.editButton, isEditing && styles.saveButton]}
             onPress={toggleEdit}
           >
-            <Text style={styles.editButtonText}>{isEditing ? "Save" : "Edit"}</Text>
+            <Text style={styles.editButtonText}>
+              {isEditing ? "Save" : "Edit"}
+            </Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -185,43 +236,105 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#e6f7fb" },
+  safe: { flex: 1, backgroundColor: "#E9F8FF" },
   flex: { flex: 1 },
-  container: { padding: 20, paddingBottom: 80 },
-  header: { alignItems: "center", paddingVertical: 20, marginTop: 20 },
-  avatarWrap: { marginBottom: 8 },
-  avatar: { width: 90, height: 90, borderRadius: 45 },
+  container: { padding: 20, paddingBottom: 100 },
+  header: { alignItems: "center", paddingVertical: 25, marginTop: 10 },
+  avatarWrap: {
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  avatar: { width: 100, height: 100, borderRadius: 50 },
   avatarPlaceholder: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: "#2f6b78",
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: "#1976D2",
     justifyContent: "center",
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 5,
   },
-  avatarInitial: { color: "#fff", fontSize: 36, fontWeight: "600" },
-  name: { fontSize: 20, fontWeight: "700", marginTop: 4 },
-  form: { marginTop: 14 },
-  input: {
+  avatarInitial: { color: "#fff", fontSize: 38, fontWeight: "700" },
+  cameraOverlay: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    backgroundColor: "#0D47A1",
+    borderRadius: 20,
+    padding: 6,
+  },
+  name: { fontSize: 22, fontWeight: "700", color: "#0B3954", marginTop: 6 },
+  form: {
+    marginTop: 20,
     backgroundColor: "#fff",
-    borderRadius: 8,
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  input: {
+    backgroundColor: "#F8FAFB",
+    borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 14,
     fontSize: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#e2e2e2",
+    borderColor: "#DCE3E7",
+    color: "#333",
   },
-  readonly: { color: "#333" },
-  sectionTitle: { fontSize: 18, fontWeight: "600", marginBottom: 8 },
-  addrRow: { marginBottom: 8 },
-  addressInput: { minHeight: 48, textAlignVertical: "top" },
-  removeBtn: { alignSelf: "flex-end", marginTop: 6 },
-  removeText: { color: "#a33", fontSize: 13 },
-  addAddrBtn: { marginVertical: 8 },
-  addAddrText: { color: "#0b5170", fontWeight: "600" },
-  editRow: { position: "absolute", left: 0, right: 0, bottom: 18, paddingHorizontal: 20 },
-  editButton: { backgroundColor: "#0D47A1", paddingVertical: 14, borderRadius: 6, alignItems: "center" },
+  readonly: { color: "#555" },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#0B3954",
+    marginVertical: 10,
+  },
+  addrRow: {
+    marginBottom: 10,
+    backgroundColor: "#F8FAFB",
+    borderRadius: 10,
+    padding: 6,
+  },
+  addressInput: { minHeight: 50, textAlignVertical: "top" },
+  removeBtn: { alignSelf: "flex-end", marginTop: 4 },
+  removeText: { color: "#E53935", fontSize: 13, fontWeight: "500" },
+  addAddrBtn: {
+    marginVertical: 8,
+    backgroundColor: "#E1F5FE",
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  addAddrText: {
+    color: "#0277BD",
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  editRow: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 20,
+    paddingHorizontal: 20,
+  },
+  editButton: {
+    backgroundColor: "#1565C0",
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
+  },
   saveButton: { backgroundColor: "#0D47A1" },
-  editButtonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+  editButtonText: { color: "#fff", fontSize: 16, fontWeight: "700" },
 });
