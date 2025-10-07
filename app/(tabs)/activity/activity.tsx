@@ -65,16 +65,22 @@ export default function Activity() {
         { id: "#IJE638975", date: "Mar 15", logo: require("@/assets/images/washnwait.jpg") },
         { id: "#ABC078365", date: "Apr 02", logo: require("@/assets/images/laundry.avif") },
       ].map((item, index) => (
-        <View key={index} style={styles.historyCard}>
-          <Image source={item.logo} style={styles.historyLogo} />
-          <View style={styles.historyDetails}>
-            <Text style={styles.historyId}>{item.id}</Text>
-            <Text style={styles.historyDate}>{item.date}</Text>
+        <TouchableOpacity
+          key={index}
+          activeOpacity={0.8}
+          onPress={() => router.push("/(tabs)/activity/orderHistory")}
+        >
+          <View style={styles.historyCard}>
+            <Image source={item.logo} style={styles.historyLogo} />
+            <View style={styles.historyDetails}>
+              <Text style={styles.historyId}>{item.id}</Text>
+              <Text style={styles.historyDate}>{item.date}</Text>
+            </View>
+            <View style={styles.deliveredBadge}>
+              <Text style={styles.deliveredText}>DELIVERED</Text>
+            </View>
           </View>
-          <View style={styles.deliveredBadge}>
-            <Text style={styles.deliveredText}>DELIVERED</Text>
-          </View>
-        </View>
+        </TouchableOpacity>
       ))}
     </ScrollView>
   );
